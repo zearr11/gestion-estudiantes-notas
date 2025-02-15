@@ -58,10 +58,10 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>D76428912</td>
-                            <td>Mark</td>
-                            <td>Otto</td>
+                        <tr th:each="professor : ${professors}">
+                            <td th:field="*{professor.nid}"></td>
+                            <td th:field="*{professor.name}"></td>
+                            <td th:field="*{professor.lastname}"></td>
                             <td>
                                 <button class="btn btn-success" role="button">
                                     <i class="bi bi-eye"></i>
