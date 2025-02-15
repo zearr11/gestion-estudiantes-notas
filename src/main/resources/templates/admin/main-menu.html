@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="https://thymeleaf.org">
+<head th:replace="admin/master-page :: head-mp"></head>
+<body>
+    
+    <title>Menu Principal</title>
+    
+    <header th:replace="admin/master-page :: header-navbar"></header>
+
+    <div class="container body">
+        <div class="row mt-4">
+            <div class="mt-1">
+                <article>
+                    <section>
+                        <h1 class="pb-2 mb-4">Inicio</h1>
+                    </section>
+                    <section>
+                        <div class="last-add mb-4">
+                            
+                            <h4 class="mb-3">Ultimos Profesores Agregados</h4> 
+                            
+                            <div class="row" style="justify-content: center;">
+
+                                <div class="card min-width col-md-4 me-auto me-md-2 mb-2">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Docente</h5>
+                                        <h6 class="card-subtitle mb-2 text-body-secondary">Juan Luis Herrera Lopez</h6>
+                                        <p class="card-text">Edad: 25 años.<br>
+                                            Area: Computación e Informática.<br>
+                                            Celular: 987678231</p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </section>
+                    <section>
+                        <div class="last-add mb-4">
+                            
+                            <h4 class="mb-3">Ultimos Estudiantes Agregados</h4> 
+                            
+                            <div class="row" style="justify-content: center;">
+
+                                <div class="card min-width col-md-4 me-auto me-md-2 mb-2">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Estudiante</h5>
+                                        <h6 class="card-subtitle mb-2 text-body-secondary">Juan Luis Herrera Lopez</h6>
+                                        <p class="card-text">Edad: 25 años.<br>
+                                            Area: Computación e Informática.<br>
+                                            Celular: 987678231</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </section>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <footer th:replace="admin/master-page :: footer"></footer>
+</body>
+</html>

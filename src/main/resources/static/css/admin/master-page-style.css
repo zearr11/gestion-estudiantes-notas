@@ -1,0 +1,27 @@
+.varmenu {
+    position: fixed;
+    width: 100%;
+    background: linear-gradient(to left, #293138, #212529);
+}
+#logo {
+    border-radius: 150px;
+}
+.body {
+    padding-top: 70px;
+}
+h1 {
+    border-bottom: 1px solid black;
+}
+.last-add {
+    border-radius: 15px;
+    padding: 25px;
+    background-color: rgba(231, 231, 231, 0.74);
+}
+.card {
+    position: static;
+}
+@media (min-width: 992px) {
+    .min-width {
+      width: 30% !important;
+    }
+}

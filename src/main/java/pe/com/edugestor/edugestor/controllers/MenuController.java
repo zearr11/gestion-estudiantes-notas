@@ -6,12 +6,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 @Controller
-@RequestMapping("/login")
-public class LoginController {
-    
+@RequestMapping("/")
+public class MenuController {
     @GetMapping()
-    public String goLoginView() {
-        return "login";
+    public String goMenuAdminView() {
+        return "admin/main-menu";
     }
     
 }
