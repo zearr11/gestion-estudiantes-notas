@@ -2,9 +2,7 @@
 <html lang="es" xmlns:th="https://thymeleaf.org">
 <head th:replace="admin/master-page :: head-mp"></head>
 <body>
-    
     <title>Menu Principal</title>
-    
     <header th:replace="admin/master-page :: header-navbar"></header>
 
     <div class="container body">
@@ -21,13 +19,17 @@
                             
                             <div class="row" style="justify-content: center;">
 
-                                <div class="card min-width col-md-4 me-auto me-md-2 mb-2">
+                                <div class="card min-width col-md-4 me-auto me-md-2 mb-2" th:each="professor : ${professors}">
                                     <div class="card-body">
                                         <h5 class="card-title">Docente</h5>
-                                        <h6 class="card-subtitle mb-2 text-body-secondary">Juan Luis Herrera Lopez</h6>
-                                        <p class="card-text">Edad: 25 años.<br>
-                                            Area: Computación e Informática.<br>
-                                            Celular: 987678231</p>
+                                        <h6 class="card-subtitle mb-2 text-body-secondary" th:text="|${professor.name} ${professor.lastname}|"></h6>
+                                        <p class="card-text">
+                                            <span>DNI: <span class="text-body-secondary" th:text="${professor.nid}"></span></span><br>
+                                            <span>Género: <span class="text-body-secondary" th:text="${professor.gender}"></span></span><br>
+                                            <span>Especialidad: <span class="text-body-secondary" th:text="${professor.specialty}"></span></span><br>
+                                            <span>Celular: <span class="text-body-secondary" th:text="${professor.numberPhone}"></span></span><br>
+                                            <span>Email: <span class="text-body-secondary" th:text="${professor.email}"></span></span>
+                                        </p>
                                     </div>
                                 </div>
 
