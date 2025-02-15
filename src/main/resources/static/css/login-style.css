@@ -1,0 +1,47 @@
+* {
+    color: white;
+}
+.background {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: url(/img/background.jpg) no-repeat center center/cover;
+}
+.login {
+    height: 100vh;
+    background: linear-gradient(to left, #212529, #40505f);
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.formdiv {
+    font-size: 20px;
+    margin-top: 30px;
+    margin-left: 100px;
+    margin-right: 100px;
+}
+#logo {
+    border-radius: 150px;
+}
+
+@media (max-width: 1399px) {
+    .login {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    .background {
+        display: none;
+    }
+}
+
+@media (min-width: 1400px) {
+    .login {
+        flex: 0 0 33.3333%;
+        max-width: 33.3333%;
+    }
+    .background {
+        display: block;
+    }
+}
