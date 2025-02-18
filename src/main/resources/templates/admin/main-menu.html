@@ -22,13 +22,14 @@
                                 <div class="card min-width col-md-4 me-auto me-md-2 mb-2" th:each="professor : ${professors}">
                                     <div class="card-body">
                                         <h5 class="card-title">Docente</h5>
-                                        <h6 class="card-subtitle mb-2 text-body-secondary" th:text="|${professor.name} ${professor.lastname}|"></h6>
+                                        <h6 class="card-subtitle mb-2 text-body-secondary" th:text="|${professor.person.name} ${professor.person.lastname}|"></h6>
                                         <p class="card-text">
-                                            <span>DNI: <span class="text-body-secondary" th:text="${professor.nid}"></span></span><br>
-                                            <span>Género: <span class="text-body-secondary" th:text="${professor.gender}"></span></span><br>
+                                            <span>Tipo Documento: <span class="text-body-secondary" th:text="${professor.person.typeNid}"></span></span><br>
+                                            <span>N° Documento: <span class="text-body-secondary" th:text="${professor.person.nid}"></span></span><br>
+                                            <span>Género: <span class="text-body-secondary" th:text="${professor.person.gender}"></span></span><br>
                                             <span>Especialidad: <span class="text-body-secondary" th:text="${professor.specialty}"></span></span><br>
-                                            <span>Celular: <span class="text-body-secondary" th:text="${professor.numberPhone}"></span></span><br>
-                                            <span>Email: <span class="text-body-secondary" th:text="${professor.email}"></span></span>
+                                            <span>Celular: <span class="text-body-secondary" th:text="${professor.person.numberPhone}"></span></span><br>
+                                            <span>Email: <span class="text-body-secondary" th:text="${professor.person.email}"></span></span>
                                         </p>
                                     </div>
                                 </div>
