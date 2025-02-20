@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="https://www.thymeleaf.org">
+<head th:replace="~{professor/master-page :: head-mp}"></head>
+<body>
+    <script th:src="@{/js/professor/course.js}"></script>
+    <title>Cursos</title>
+    <header th:replace="~{professor/master-page :: header-navbar}"></header>
+
+    <div class="container body">
+
+        <div class="row mt-4">
+            <div class="mt-1">
+                <h1 class="pb-2 mb-4">Cursos</h1>
+                <div class="row">
+
+                    <div class="col-8 col-md-4">
+                        <form class="d-flex" role="search">
+                            <input class="form-control me-2" type="search" placeholder="Buscar Curso" aria-label="Search">
+                            <button class="btn btn-outline-success" type="submit">Buscar</button>
+                        </form>
+                    </div>
+
+                    <div class="col-4 col-md-8" style="text-align: right;">
+                        <button type="button" class="btn btn-primary" id="btn-new-course" onclick="showViewAddCourse()">Agregar Nuevo Curso</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="view-add-course" hidden class="row mb-4 mt-4">
+            <div class="mt-1">
+                <div class="row">
+
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h4 class="card-title">Nuevo Curso:</h4>
+                            <h6 class="card-subtitle mb-2 text-body-secondary"></h6>
+                            <p class="card-text">
+                                <form th:object="${course}" th:action="@{/cursos/nuevo}" method="post">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <label for="nameCourse" class="mb-2">Nombre</label>
+                                            <input type="text" class="form-control" id="nameCourse" placeholder="Nombre de Curso" name="nameCourse" required>
+                                        </div>
+                                        <div class="form-group mt-3">
+                                            <label for="nameCourse" class="mb-2">Descripción</label>
+                                            <textarea class="form-control" name="description" id="description" placeholder="Detalle de Curso"></textarea>
+                                        </div>
+                                        <div class="text-center mt-4">
+                                            <button type="submit" class="btn btn-success">Agregar Nuevo Curso</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row mb-4 mt-4">
+            <div class="mt-1">
+                <div class="row mb-4">
+
+                    <div class="col-12 col-md-4 mb-4" th:each="course : ${courses}">
+                        <div class="card">
+                            <a href="#" style="text-decoration: none; color: black;">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center mb-3" th:text="${course.nameCourse}"></h5>
+                                    <span>
+                                        <p class="mb-1" style="font-size: 17px;">Descripción: </p> 
+                                        <p class="card-text" style="color: rgb(104, 102, 102);" th:text="${course.description}"></p> 
+                                    </span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer th:replace="~{professor/master-page :: footer}"></footer>
+</body>
+</html>

@@ -30,8 +30,3 @@ h1 {
 .card {
     position: static;
 }
-@media (min-width: 992px) {
-    .min-width {
-      width: 30% !important;
-    }
-}

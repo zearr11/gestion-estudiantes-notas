@@ -26,7 +26,7 @@ public class Course {
     private Long idCourse;
 
     @Column(name = "name_course")
-    private String nameCouse;
+    private String nameCourse;
 
     @Column(name = "description")
     private String description;
