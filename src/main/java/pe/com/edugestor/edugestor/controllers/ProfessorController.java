@@ -1,12 +1,17 @@
 package pe.com.edugestor.edugestor.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import pe.com.edugestor.edugestor.models.Person;
 import pe.com.edugestor.edugestor.models.Professor;
+import pe.com.edugestor.edugestor.models.User;
 import pe.com.edugestor.edugestor.services.PersonService;
 import pe.com.edugestor.edugestor.services.ProfessorService;
+import pe.com.edugestor.edugestor.services.UserService;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,13 +26,16 @@ public class ProfessorController {
     
     private ProfessorService professorService;
     private PersonService personService;
+    private UserService userService;
+
     private Professor professorSelected;
     private Person dataProfessorSelected;
-    private Professor professorDefault = new Professor(null, null, null);
+    private Professor professorDefault = new Professor(null, null, null, null, null);
     
-    public ProfessorController(ProfessorService serviceProf, PersonService servicePer){
+    public ProfessorController(ProfessorService serviceProf, PersonService servicePer, UserService serviceUser){
         this.professorService = serviceProf;
         this.personService = servicePer;
+        this.userService = serviceUser;
     }
      
     @GetMapping()
@@ -44,6 +52,13 @@ public class ProfessorController {
     
     @PostMapping("/guardar")
     public String saveProfessor(@ModelAttribute Professor professorToSave) {
+        List<Person> persons = new ArrayList<>();
+        persons.add(professorToSave.getPerson());
+        User userToSave = new User(null, "D" + professorToSave.getPerson().getNid(), 
+        "D" + professorToSave.getPerson().getNid(), "Profesor", "Activo", persons);
+        professorToSave.getPerson().setUser(userToSave);
+
+        userService.createUser(userToSave);
         personService.createPerson(professorToSave.getPerson());
         professorService.createProfessor(professorToSave);
         return "redirect:/profesores";
@@ -55,7 +70,7 @@ public class ProfessorController {
 
         if (professorSelected == null)
             return "redirect:/profesores";
-
+        
         dataProfessorSelected = professorSelected.getPerson();
         model.addAttribute("professor", professorSelected);
         return "admin/professor-edit";
@@ -64,9 +79,12 @@ public class ProfessorController {
     @PostMapping("/actualizar")
     public String updateProfessor(@ModelAttribute Professor professorToUpdate) {
         
+        dataProfessorSelected.getUser().setCodUser("D" + professorToUpdate.getPerson().getNid());
         professorToUpdate.setIdProfessor(professorSelected.getIdProfessor());
         professorToUpdate.getPerson().setIdPerson(dataProfessorSelected.getIdPerson());
+        professorToUpdate.getPerson().setUser(dataProfessorSelected.getUser());
 
+        this.userService.updateUser(professorToUpdate.getPerson().getUser());
         this.personService.updatePerson(professorToUpdate.getPerson());
         this.professorService.updateProfessor(professorToUpdate);
 

@@ -46,9 +46,14 @@ public class ProfessorService {
         return this.professorRepository.saveAndFlush(professorToUpdate);
     }
     
-    
-    public List<Professor> listLastFiveProfessor() {
-        return professorRepository.findTop5Professors();
+    // Listar Ultimos 5 Profesores registrados
+    public List<Professor> listLastSixProfessor() {
+        return professorRepository.findTop6Professors();
+    }
+
+    // Obtener profesor que se encuentra logeado por codigo de usuario
+    public Professor getProfessorLog(String codUser){
+        return professorRepository.getProfessorLogIn(codUser);
     }
     
 }

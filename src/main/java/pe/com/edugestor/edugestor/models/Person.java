@@ -2,14 +2,14 @@ package pe.com.edugestor.edugestor.models;
 
 import java.time.LocalDate;
 import java.util.List;
-
 import org.springframework.format.annotation.DateTimeFormat;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -42,10 +42,10 @@ public class Person {
     @Column(name = "gender", length = 20, nullable = false)
     private String gender;
 
-    @Column(name = "type_nid", nullable = false)
+    @Column(name = "type_nid", nullable = false, length = 5)
     private String typeNid;
 
-    @Column(name = "nid", unique = true, nullable = false)
+    @Column(name = "nid", unique = true, nullable = false, length = 10)
     private int nid;
 
     @Column(name = "numberPhone", nullable = false)
@@ -59,4 +59,11 @@ public class Person {
 
     @OneToMany(mappedBy = "person")
     private List<Professor> professor;
+
+    @ManyToOne
+    @JoinColumn(name = "id_user")
+    private User user;
+
+    @OneToMany(mappedBy = "person")
+    private List<Student> students;
 }
