@@ -32,7 +32,7 @@ public class CourseController {
     @Autowired
     private ProfessorService professorService;
 
-    private Course courseDefault = new Course(null, null, null, null);
+    private Course courseDefault = new Course(null, null, null, null, null);
 
     @GetMapping()
     public String goViewCourses(Model model) {

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="https://www.thymeleaf.org">
+<head th:replace="~{professor/master-page :: head-mp}"></head>
+<body>
+    <title>Nueva Sección</title>
+    <header th:replace="~{professor/master-page :: header-navbar}"></header>
+
+    <style>
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            margin-bottom: 6px;
+        }
+    </style>
+
+    <div class="container body">
+        <div class="row mt-4">
+            <div class="mt-1">
+
+                <h1 class="pb-2 mb-4">Nueva Sección</h1>
+
+                <form th:action="@{/secciones/guardar}" method="post">
+                    <!--
+                    nameCourse -- Long id
+                    hourStart -- String hourStart
+                    hourEnd -- String hourEnd
+                    days -- List<Integer> daysOfWeek
+                    studentAdded -- String studentAdded
+                    -->
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <h4>Curso</h4>
+                            <select id="nameCourse" name="nameCourse" class="form-select" required>
+                                <option disabled value="" selected>Seleccione el curso...</option>
+                                <option th:each="course : ${courses}" th:value="${course.idCourse}" th:text="${course.nameCourse}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row text-center">
+                        <div class="mb-3 col-6">
+                            <label for="hourStart" class="form-label">Hora de inicio por clase</label>
+                            <input type="time" class="form-control" id="hourStart" name="hourStart" required>
+                        </div>
+                        
+                        <div class="mb-3 col-6">
+                            <label for="hourEnd" class="form-label">Hora de fin por clase</label>
+                            <input type="time" class="form-control" id="hourEnd" name="hourEnd" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 text-center mt-2">
+                        <div>
+                            <label class="form-label mb-2">Selecciona los días de clase por semana</label>
+                        </div>
+                        <div class="btn-group" role="group" aria-label="Días de clase por semana">
+                            <input type="checkbox" class="btn-check" id="monday" name="days" value="1" autocomplete="off">
+                            <label class="btn btn-outline-success" for="monday">Lun</label>
+                    
+                            <input type="checkbox" class="btn-check" id="tuesday" name="days" value="2" autocomplete="off">
+                            <label class="btn btn-outline-warning" for="tuesday">Mar</label>
+                    
+                            <input type="checkbox" class="btn-check" id="wednesday" name="days" value="3" autocomplete="off">
+                            <label class="btn btn-outline-danger" for="wednesday">Mié</label>
+                    
+                            <input type="checkbox" class="btn-check" id="thursday" name="days" value="4" autocomplete="off">
+                            <label class="btn btn-outline-secondary" for="thursday">Jue</label>
+                    
+                            <input type="checkbox" class="btn-check" id="friday" name="days" value="5" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="friday">Vie</label>
+                    
+                            <input type="checkbox" class="btn-check" id="saturday" name="days" value="6" autocomplete="off">
+                            <label class="btn btn-outline-info" for="saturday">Sáb</label>
+                    
+                            <input type="checkbox" class="btn-check" id="sunday" name="days" value="7" autocomplete="off">
+                            <label class="btn btn-outline-dark" for="sunday">Dom</label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4>Estudiantes</h4>
+                        <div class="input-group">
+                            <select class="form-select text-center" id="select-student">
+                                <option value="">Seleccionar Estudiante...</option>
+                                <option th:each="student : ${students}" 
+                                        th:value="${student.idStudent}" 
+                                        th:data-code="${student.person.user.codUser}"
+                                        th:data-name="${student.person.name}"
+                                        th:data-lastname="${student.person.lastname}"
+                                        th:data-typenid="${student.person.typeNid}"
+                                        th:data-nid="${student.person.nid}"
+                                        th:text="|${student.person.user.codUser} -- ${student.person.name} 
+                                        ${student.person.lastname} -- ${student.person.typeNid}: ${student.person.nid}|">
+                                </option>
+                            </select>
+                            <button type="button" class="btn btn-outline-success" onclick="addStudentOnList()" >Agregar</button>
+                        </div>
+                    </div>
+                    <div class="mt-4" style="background-color: whitesmoke; border-radius: 10px; padding: 17px;" id="divStudentList" hidden>
+                        <input type="hidden" id="studentsAdded" name="studentsAdded" required>
+                        <div>
+                            <h5 class="mb-3">📌 Lista de Estudiantes Agregados:</h5>
+                            <div id="studentList"></div>
+                        </div>
+                    </div>
+
+                    <div class="text-center" id="save-course-finish" hidden>
+                        <button type="submit" class="btn btn-success mt-4 mb-4">Finalizar creación de curso</button>
+                    </div>
+
+                    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                        <div id="toastValidacion" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    Selecciona un estudiante válido.
+                                </div>
+                                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const studentSelect = document.getElementById("select-student");
+        const studentList = document.getElementById("studentList");
+        const studentsAddedInput = document.getElementById("studentsAdded");
+
+        function updateStudentsAdded() {
+            let students = [];
+            document.querySelectorAll("#studentList div[data-id]").forEach(div => {
+                students.push(div.dataset.id);
+            });
+            studentsAddedInput.value = students.join(",");
+        }
+        
+        function addStudentOnList() {
+            if (studentSelect.value != "") {
+                if (document.getElementById("divStudentList").hidden == true){
+                    document.getElementById("divStudentList").hidden = false;
+                    document.getElementById("save-course-finish").hidden = false;
+                }
+                const selectedOption = studentSelect.options[studentSelect.selectedIndex];
+                const studentId = selectedOption.value;
+                const studentCode = selectedOption.dataset.code;
+                const studentName = selectedOption.dataset.name;
+                const studentLastname = selectedOption.dataset.lastname;
+                const studentTypeNid = selectedOption.dataset.typenid;
+                const studentNid = selectedOption.dataset.nid;
+
+                const studentCard = document.createElement("div");
+                studentCard.classList.add("alert", "alert-secondary", "d-flex", "justify-content-between", "align-items-center");
+                studentCard.dataset.id = studentId;
+                studentCard.innerHTML = `
+                    <div>
+                        <strong>${studentCode}</strong><br>
+                        ${studentName} ${studentLastname}<br>
+                        ${studentTypeNid}: ${studentNid}
+                    </div>
+                    <button class="btn btn-danger btn-sm" onclick="removeStudent('${studentId}', '${studentCode}', '${studentName}', '${studentLastname}', '${studentTypeNid}', '${studentNid}')">❌</button>
+                `;
+                
+                studentList.appendChild(studentCard);
+                studentSelect.remove(studentSelect.selectedIndex);
+
+                updateStudentsAdded();
+                
+            } else {
+                let toastElement = new bootstrap.Toast(document.getElementById("toastValidacion"), { delay: 2000 });
+                toastElement.show();
+            }
+        }
+
+        function removeStudent(studentId, studentCode, studentName, studentLastname, studentTypeNid, studentNid) {
+            const studentCard = document.querySelector(`[data-id='${studentId}']`);
+            if (studentCard) {
+                studentCard.remove();
+            }
+
+            const option = document.createElement("option");
+            option.value = studentId;
+            option.dataset.code = studentCode;
+            option.dataset.name = studentName;
+            option.dataset.lastname = studentLastname;
+            option.dataset.typenid = studentTypeNid;
+            option.dataset.nid = studentNid;
+            option.textContent = `${studentCode} -- ${studentName} ${studentLastname} -- ${studentTypeNid}: ${studentNid}`;
+            
+            studentSelect.appendChild(option);
+
+            document.getElementById("divStudentList").hidden = studentList.children.length === 0;
+            document.getElementById("save-course-finish").hidden = studentList.children.length === 0;
+
+            updateStudentsAdded();
+        }
+
+    </script>
+
+    <footer th:replace="~{professor/master-page :: footer}"></footer>
+</body>
+</html>

@@ -41,7 +41,7 @@ public class StudentController {
     @Autowired
     private UserService userService;
 
-    private Student studentDefault = new Student(null, null, null);
+    private Student studentDefault = new Student(null, null, null, null);
     private Student studentSelected;
     private Person dataPersonStudent;
 

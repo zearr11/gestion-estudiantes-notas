@@ -21,6 +21,9 @@
                     </div>
 
                     <div class="col-4 col-md-8" style="text-align: right;">
+                        <a th:href="@{/secciones/nuevo}" style="text-decoration: none;">
+                            <button type="button" class="btn btn-success" id="btn-new-section">Crear Sección</button>
+                        </a>
                         <button type="button" class="btn btn-primary" id="btn-new-course" onclick="showViewAddCourse()">Agregar Nuevo Curso</button>
                     </div>
 
@@ -67,15 +70,18 @@
 
                     <div class="col-12 col-md-4 mb-4" th:each="course : ${courses}">
                         <div class="card">
-                            <a href="#" style="text-decoration: none; color: black;">
-                                <div class="card-body">
-                                    <h5 class="card-title text-center mb-3" th:text="${course.nameCourse}"></h5>
-                                    <span>
-                                        <p class="mb-1" style="font-size: 17px;">Descripción: </p> 
-                                        <p class="card-text" style="color: rgb(104, 102, 102);" th:text="${course.description}"></p> 
-                                    </span>
+                            <div class="card-body">
+                                <h5 class="card-title text-center mb-3" th:text="${course.nameCourse}"></h5>
+                                <span>
+                                    <p class="mb-1" style="font-size: 17px;">Descripción: </p> 
+                                    <p class="card-text" style="color: rgb(104, 102, 102);" th:text="${course.description}"></p> 
+                                </span>
+                                <div class="mt-3 mb-1">
+                                    <a th:href="@{/secciones/{formattedName}(formattedName=${#strings.toLowerCase(#strings.replace(course.nameCourse, ' ', '-')) + '-' + course.idCourse})}" style="text-decoration: none">
+                                        <button type="button" class="btn btn-dark col-12">Ver Secciones</button>     
+                                    </a>
                                 </div>
-                            </a>
+                            </div>
                         </div>
                     </div>
 

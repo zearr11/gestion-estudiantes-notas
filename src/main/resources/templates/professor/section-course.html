@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="https://www.thymeleaf.org">
+<head th:replace="~{professor/master-page :: head-mp}" ></head>
+<body>
+    <title>Lista de Secciones</title>
+    <header th:replace="~{professor/master-page :: header-navbar}"></header>
+
+    <div class="container body">
+
+        <div class="row mt-4">
+            <div class="mt-1">
+                <h1 class="pb-2 mb-2" th:text="${course.nameCourse}"></h1>
+                <div class="row">
+
+                </div>
+            </div>
+        </div> 
+
+        <div class="row mb-4 mt-4">
+            <div class="mt-1">
+                <div class="row mb-4">
+
+                    <div th:if="${#lists.isEmpty(sections)}" class="text-center">
+                        <p class="text-muted" style="font-size: 18px;">No hay secciones registradas.</p>
+                        <a th:href="@{/secciones/nuevo}" class="btn btn-success mt-2">
+                            Haz clic aquí para agregar una nueva sección
+                        </a>
+                    </div>                    
+                    
+                    <div class="col-12 col-md-4 mb-4" th:each="section : ${sections}">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-center mb-3" th:text="${section.codSection}"></h5>
+                                <span>
+                                    <p class="mb-1" style="font-size: 17px;"><strong style="font-weight: 600;">Estado:</strong> <span th:text="${section.state}"></span></p> 
+                                    <p class="mb-1" style="font-size: 17px;">
+                                        <strong style="font-weight: 600;">Frecuencia:</strong> 
+                                        <span th:text="${#strings.listJoin(section.day.![nameDay], ', ')}"></span>
+                                    </p>                                    
+                                    <p class="mb-1" style="font-size: 17px;"><strong style="font-weight: 600;">Hora de Inicio:</strong> <span th:text="${section.hourStart}"></span></p> 
+                                    <p class="mb-1" style="font-size: 17px;"><strong style="font-weight: 600;">Hora de Fin:</strong> <span th:text="${section.hourEnd}"></span></p> 
+                                </span>
+                                <div class="mt-3 mb-1">
+                                    <a th:href="@{/secciones/{formattedName}(formattedName=${#strings.toLowerCase(#strings.replace(course.nameCourse, ' ', '-')) + '-' + course.idCourse})}" style="text-decoration: none">
+                                        <button type="button" class="btn btn-dark col-12">Ver material didáctico</button>     
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer th:replace="~{professor/master-page :: footer}"></footer>
+</body>
+</html>

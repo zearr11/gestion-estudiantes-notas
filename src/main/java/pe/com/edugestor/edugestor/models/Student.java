@@ -37,4 +37,7 @@ public class Student {
         joinColumns = @JoinColumn(name = "id_student"),
         inverseJoinColumns = @JoinColumn(name = "id_professor"))
     private List<Professor> professor;
+
+    @ManyToMany(mappedBy = "students")
+    List<Section> sections;
 }

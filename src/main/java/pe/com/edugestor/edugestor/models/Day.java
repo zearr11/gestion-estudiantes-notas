@@ -7,9 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,23 +19,15 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "course")
-public class Course {
-    
+@Table(name = "day")
+public class Day {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idCourse;
+    private Long idDay;
 
-    @Column(name = "name_course")
-    private String nameCourse;
+    @Column(name = "name_day")
+    private String nameDay;
 
-    @Column(name = "description")
-    private String description;
-
-    @ManyToOne
-    @JoinColumn(name = "id_professor")
-    private Professor professor;
-
-    @OneToMany(mappedBy = "course")
-    List<Section> sections;
+    @ManyToMany(mappedBy = "day")
+    private List<Section> section;
 }
