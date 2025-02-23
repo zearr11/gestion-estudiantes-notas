@@ -68,6 +68,10 @@
             <div class="mt-1">
                 <div class="row mb-4">
 
+                    <div th:if="${#lists.isEmpty(courses)}" class="text-center mt-4">
+                        <p class="text-muted" style="font-size: 18px;">Aún no se agrega ningún curso.</p>
+                    </div>
+
                     <div class="col-12 col-md-4 mb-4" th:each="course : ${courses}">
                         <div class="card">
                             <div class="card-body">

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="https://www.thymeleaf.org">
+<head th:replace="~{professor/master-page :: head-mp}" ></head>
+<body>
+    <title>Sección</title>
+    <header th:replace="~{professor/master-page :: header-navbar}"></header>
+    
+    <div class="container body">
+
+        <div class="row mt-4">
+            <div class="mt-1">
+                <h1 class="pb-2 mb-4" th:text="${course.nameCourse}"></h1>
+                <div class="row">
+    
+                </div>
+            </div>
+        </div> 
+    
+        <div class="row mb-4">
+
+            <div class="col-6">
+                <button type="button" class="btn btn-success ps-5 pe-5 pt-2 pb-2" data-bs-toggle="modal" data-bs-target="#addDescriptionModal">
+                    Agregar Nueva sesión
+                </button>
+            </div>
+
+            <div class="modal fade" id="addDescriptionModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalLabel">Nueva Sesión</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="descriptionForm" method="post" th:action="@{/material/agregar-sesion}">
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Temas de la Sesión</label>
+                                    <textarea class="form-control" id="description-sesion" name="description-sesion" rows="4" required></textarea>
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-success">Agregar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end col-6">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle ps-5 pe-5 pt-2 pb-2" type="button" id="sessionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Sesiones
+                    </button>
+                    <ul class="dropdown-menu" id="lst-session" aria-labelledby="sessionDropdown">
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="selectSession('Sesiones', 1)">Sesiones</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="selectSession('Estudiantes', 2)">Estudiantes</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="#" onclick="selectSession('Información', 3)">Información</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="last-add mb-4 mt-3">
+            
+            <!-- Sesions -->
+            <div class="row view-sesions" name="view-sesions">
+                <div class="text-center mb-4">
+                    <div class="dropdown">
+                            <button class="btn btn-dark dropdown-toggle ps-5 pe-5 pt-2 pb-2 col-12" style="font-size: 20px;" type="button" id="numberSection" data-bs-toggle="dropdown" aria-expanded="false" th:text="${#lists.size(materials) > 0 ? materials[0].titleMaterial : 'Introducción'}"></button>
+                            <ul class="dropdown-menu dropdown-menu-dark col-2 text-center" aria-labelledby="numberSection">
+                                <li th:each="material : ${materials}">
+                                    <a class="dropdown-item" href="#" th:data-id="${material.idMaterial}" th:data-title="${material.titleMaterial}" th:data-description="${material.descriptionMaterial}" onclick="alternateView(event, this)">
+                                        <span th:text="${material.titleMaterial}"></span>
+                                    </a>
+                                </li>
+                            </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row view-sesions" name="view-sesions" style="justify-content: center;">
+                <div class="card min-width">
+                    <div class="card-body">
+                        <div id="data-material">
+                            <h4 class="mb-3">Resumen</h4>
+                            <p th:text="${#lists.size(materials) > 0 ? materials[0].descriptionMaterial : 'No hay descripción disponible'}"></p>
+                            <div class="border p-3 bg-light rounded">
+                                <button type="button" class="btn btn-primary d-flex align-items-center justify-content-left gap-2 col-12">
+                                    <i class="bi bi-plus-circle fs-5"></i>
+                                    Agregar recurso
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Students -->
+            <div class="row view-students" style="justify-content: center; display: none;" id="view-students">
+                <div class="card min-width">
+                    <div class="card-body">
+                        <div id="data-students">
+                            
+                            <h2 class="mt-2 mb-4">Lista de Estudiantes</h2>
+                            
+                            <div class="row">
+                                <div class="col-12 col-md-4 mb-4" th:each="student : ${section.students}">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-12 col-md-5" style="text-align: center;">
+                                                    <i class="bi bi-person-circle" style="font-size: 100px;"></i>
+                                                </div>
+                                                <div class="col-12 col-md-7">
+                                                    <div>
+                                                        <h5 class="card-title mt-3" th:text="|${student.person.user.codUser}"></h5>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="card-title mt-3">Estudiante</h5>
+                                                        <span>
+                                                            <p class="mb-1" style="font-size: 17px; margin-right: 20px;" th:text="|${student.person.name} ${student.person.lastname}|">: </p> 
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="card-title mt-3">Email</h5>
+                                                        <span>
+                                                            <p class="mb-1" style="font-size: 17px; margin-right: 20px;" th:text="|${student.person.email}">: </p> 
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Information Course and Professor -->
+            <div class="row view-information" style="justify-content: center; display: none;" id="view-information">
+                <div class="card min-width">
+                    <div class="card-body">
+                        <div id="data-information">
+                            <div class="row">
+                                <div class="col-6 col-md-4" style="text-align: right;">
+                                    <i class="bi bi-person-badge-fill" style="font-size: 150px;"></i>
+                                </div>
+                                <div class="col-6 col-md-8 mt-3">
+                                    <div>
+                                        <h4>Docente:</h4>
+                                        <p style="font-size: 18px;" th:text="|${course.professor.person.name}  ${course.professor.person.lastname}|"></p>
+                                    </div>
+                                    <div>
+                                        <h4>Horario:</h4>
+                                        <p style="font-size: 18px;" th:text="|${#strings.listJoin(section.day.![nameDay], ', ')} de ${section.hourStart}h a ${section.hourEnd}h|"></p>
+                                    </div>
+                                    <div>
+                                        <h4>Sección:</h4>
+                                        <p style="font-size: 18px;" th:text="|${section.codSection}|"></p>
+                                    </div>
+                                    <div>
+                                        <h4>Estado:</h4>
+                                        <p style="font-size: 18px;" th:text="|${section.state}|"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        function alternateView(event, element) {
+            if (event) {
+                event.preventDefault(); // Evita que el enlace cambie la URL
+            }
+        
+            var title = element.getAttribute("data-title");
+            var description = element.getAttribute("data-description");
+        
+            // Determina el encabezado basado en el título
+            var header = (title === "Introducción") ? "<h4 class='mb-3'>Resumen</h4>" : "<h4 class='mb-3'>Temas</h4>";
+        
+            // Divide la descripción por líneas y las muestra tal cual sin modificar los guiones
+            var descriptionHTML = "";
+            if (description) {
+                var items = description.split("\n").map(line => line.trim()).filter(line => line.length > 0);
+                descriptionHTML = items.map(item => `<p>${item}</p>`).join("");
+            }
+        
+            // Inserta el contenido en el div
+            document.getElementById("data-material").innerHTML = `
+                ${header}
+                ${descriptionHTML}
+                <div class="border p-3 bg-light rounded">
+                    <button type="button" class="btn btn-primary d-flex align-items-center justify-content-left gap-2 col-12">
+                        <i class="bi bi-plus-circle fs-5"></i>
+                        Agregar recurso
+                    </button>
+                </div>
+            `;
+        
+            // Actualiza el texto del botón con el título de la sesión
+            document.getElementById("numberSection").innerText = title;
+        }
+
+        function selectSession(textElement, numberElement){
+
+            document.getElementById("sessionDropdown").innerText = textElement;
+
+            var viewMaterials = document.getElementsByClassName("view-sesions"); // 1
+            var viewStudent = document.getElementsByClassName("view-students"); // 2
+            var viewInformation = document.getElementsByClassName("view-information"); // 3
+
+            for (let i = 0; i < viewMaterials.length; i++) {
+                viewMaterials[i].style.display = "none";
+            }
+            for (let i = 0; i < viewStudent.length; i++) {
+                viewStudent[i].style.display = "none";
+            }
+            for (let i = 0; i < viewInformation.length; i++) {
+                viewInformation[i].style.display = "none";
+            }
+
+            if (numberElement === 1){
+                for (let i = 0; i < viewMaterials.length; i++) {
+                    viewMaterials[i].style.display = "block";
+                }
+            } else if (numberElement === 2){
+                for (let i = 0; i < viewStudent.length; i++) {
+                    viewStudent[i].style.display = "block";
+                }
+            } else if (numberElement === 3){
+                for (let i = 0; i < viewInformation.length; i++) {
+                    viewInformation[i].style.display = "block";
+                }
+            }
+        }
+
+
+    </script>
+    
+    <footer th:replace="~{professor/master-page :: footer}"></footer>
+</body>
+</html>

@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -60,4 +61,7 @@ public class Section {
         inverseJoinColumns = @JoinColumn(name = "id_student")
     )
     private List<Student> students;
+
+    @OneToMany(mappedBy = "section")
+    private List<Material> materials;
 }

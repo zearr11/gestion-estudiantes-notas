@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import pe.com.edugestor.edugestor.models.Course;
 import pe.com.edugestor.edugestor.models.Day;
+import pe.com.edugestor.edugestor.models.Material;
 import pe.com.edugestor.edugestor.models.Professor;
 import pe.com.edugestor.edugestor.models.Section;
 import pe.com.edugestor.edugestor.models.Student;
 import pe.com.edugestor.edugestor.services.CourseService;
 import pe.com.edugestor.edugestor.services.DayService;
+import pe.com.edugestor.edugestor.services.MaterialService;
 import pe.com.edugestor.edugestor.services.ProfessorService;
 import pe.com.edugestor.edugestor.services.SectionService;
 import pe.com.edugestor.edugestor.services.StudentService;
@@ -44,22 +46,24 @@ public class SectionController {
     @Autowired
     private DayService dayService;
 
+    @Autowired
+    private MaterialService materialService;
+
     private Course courseDefault = new Course(null, null, null, null, null);
     
     // --------------------------------------------------------------------------------------------- //
     // POR VER //
     @GetMapping("/{url}")
-    public String verSecciones(@PathVariable String url, Model model) {
+    public String goViewSections(@PathVariable String url, Model model) {
         
         String[] parts = url.split("-"); String idCourse = parts[parts.length - 1]; 
         
         Course courseSelected = this.courseService.getCourseByID(Long.parseLong(idCourse));
 
-        courseSelected.getNameCourse();
-        courseSelected.getSections();
-
         model.addAttribute("course", courseSelected);
         model.addAttribute("sections", courseSelected.getSections());
+
+        System.out.println(courseSelected.getNameCourse());
         
         return "professor/section-course"; 
     }
@@ -117,11 +121,22 @@ public class SectionController {
         for (int s = 0; studentIds.size() > s; s++){
             studentsToSection.add(this.studentService.getStudentByID(Long.parseLong(studentIds.get(s)+"")));
         } 
+
+        List<Material> materials = new ArrayList<>();
+        materials.add(new Material(null, "Introducción",
+        this.courseService.getCourseByID(id).getDescription(), null));
+
         // Creacion de objeto seccion y agregado de todos los datos
         Section sectionToSave = new Section(null, codSection, hourStart, hourEnd, "En curso", daysToSection, 
-        this.courseService.getCourseByID(id), studentsToSection);
+        this.courseService.getCourseByID(id), studentsToSection, materials);
+
+        // Asignacion de datos faltantes
+        materials.get(0).setSection(sectionToSave);
+        sectionToSave.setMaterials(materials);
+
         // Insercion en la bd
         this.sectionService.createSection(sectionToSave);
+        this.materialService.createMaterial(materials.get(0));
         return "redirect:/cursos";
     }
 

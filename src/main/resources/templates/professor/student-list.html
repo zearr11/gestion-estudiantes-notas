@@ -41,38 +41,46 @@
         <div class="row mb-4">
             
             <div class="col-12 mt-4">
-                <table class="table text-center">
-                    <thead class="table-dark">
-                        <tr>
-                            <th scope="col">Código</th>
-                            <th scope="col">Nombres</th>
-                            <th scope="col">Apellidos</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Celular</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="student : ${students}">
-                            <td th:text="${student.person.user.codUser}"></td>
-                            <td th:text="${student.person.name}"></td>
-                            <td th:text="${student.person.lastname}"></td>
-                            <td th:text="${student.person.email}"></td>
-                            <td th:text="${student.person.numberPhone}"></td>
-                            <td>
-                                <button class="btn btn-success" role="button">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <a th:href="@{'/estudiantes/editar/' + ${student.idStudent}}" class="btn btn-warning">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <button class="btn btn-danger" role="button">
-                                    <i class="bi bi-trash3-fill"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+
+                <div th:if="${not #lists.isEmpty(students)}">
+                    <table class="table text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">Código</th>
+                                <th scope="col">Nombres</th>
+                                <th scope="col">Apellidos</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Celular</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="student : ${students}">
+                                <td th:text="${student.person.user.codUser}"></td>
+                                <td th:text="${student.person.name}"></td>
+                                <td th:text="${student.person.lastname}"></td>
+                                <td th:text="${student.person.email}"></td>
+                                <td th:text="${student.person.numberPhone}"></td>
+                                <td>
+                                    <button class="btn btn-success" role="button">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <a th:href="@{'/estudiantes/editar/' + ${student.idStudent}}" class="btn btn-warning">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <button class="btn btn-danger" role="button">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <p th:if="${#lists.isEmpty(students)}" class="text-muted text-center" style="font-size: 18px; padding: 20px;">
+                    Aún no se agrega ningún estudiante.
+                </p>
+
             </div>
 
         </div>

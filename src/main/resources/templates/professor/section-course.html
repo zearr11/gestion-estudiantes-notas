@@ -41,7 +41,7 @@
                                     <p class="mb-1" style="font-size: 17px;"><strong style="font-weight: 600;">Hora de Fin:</strong> <span th:text="${section.hourEnd}"></span></p> 
                                 </span>
                                 <div class="mt-3 mb-1">
-                                    <a th:href="@{/secciones/{formattedName}(formattedName=${#strings.toLowerCase(#strings.replace(course.nameCourse, ' ', '-')) + '-' + course.idCourse})}" style="text-decoration: none">
+                                    <a th:href="@{/material/{formattedName}(formattedName=${#strings.toLowerCase(#strings.replace(course.nameCourse, ' ', '-')) + '-' + course.idCourse + '-' + section.idSection})}" style="text-decoration: none">
                                         <button type="button" class="btn btn-dark col-12">Ver material didáctico</button>     
                                     </a>
                                 </div>
