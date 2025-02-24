@@ -17,6 +17,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         pe.com.edugestor.edugestor.models.User user = userRepository.findByCodUser(codUser)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
+        // Validar si el usuario está inactivo
+        if (!"Activo".equalsIgnoreCase(user.getState())) {
+            throw new UsernameNotFoundException("El usuario está inactivo");
+        }
+
         return org.springframework.security.core.userdetails.User.withUsername(user.getCodUser())
             .password(user.getPassword())
             .roles(user.getRol())

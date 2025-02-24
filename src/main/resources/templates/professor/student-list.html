@@ -62,13 +62,28 @@
                                 <td th:text="${student.person.email}"></td>
                                 <td th:text="${student.person.numberPhone}"></td>
                                 <td>
-                                    <button class="btn btn-success" role="button">
+                                    <button class="btn btn-success verUsuario"
+                                            data-bs-toggle="modal" data-bs-target="#usuarioModal"
+                                            th:data-codigo="${student.person.user.codUser}" 
+                                            th:data-nombre="${student.person.name}" 
+                                            th:data-apellido="${student.person.lastname}" 
+                                            th:data-tipdoc="${student.person.typeNid}"
+                                            th:data-nid="${student.person.nid}"
+                                            th:data-email="${student.person.email}" 
+                                            th:data-celular="${student.person.numberPhone}"
+                                            th:data-estado="${student.person.user.state}"
+                                            th:data-genero="${student.person.gender}"
+                                            th:data-date="${student.person.dateBirth}"
+                                            th:data-direccion="${student.person.address}">
                                         <i class="bi bi-eye"></i>
                                     </button>
                                     <a th:href="@{'/estudiantes/editar/' + ${student.idStudent}}" class="btn btn-warning">
                                         <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <button class="btn btn-danger" role="button">
+                                    <button class="btn btn-danger eliminarUsuario"
+                                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                            th:data-nombre="${student.person.name}" 
+                                            th:data-apellido="${student.person.lastname}">
                                         <i class="bi bi-trash3-fill"></i>
                                     </button>
                                 </td>
@@ -76,6 +91,91 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Modal View -->
+                <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered"> <!-- Se agrega 'modal-dialog-centered' -->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="usuarioModalLabel">Detalles del Usuario</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Código</th>
+                                        <td id="modalCodigo"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Nombres</th>
+                                        <td id="modalNombre"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Apellidos</th>
+                                        <td id="modalApellido"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tipo de Documento</th>
+                                        <td id="modalTipDoc"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Número de Documento</th>
+                                        <td id="modalNid"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email</th>
+                                        <td id="modalEmail"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Celular</th>
+                                        <td id="modalCelular"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Estado</th>
+                                        <td id="modalEstado"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Género</th>
+                                        <td id="modalGenero"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Fecha de Nacimiento</th>
+                                        <td id="modalDate"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Dirección</th>
+                                        <td id="modalDireccion"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+                
+                <!-- Modal Delete -->
+                <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Deshabilitar estudiante</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>¿Estás seguro de querer deshabilitar la cuenta del estudiante <strong id="studentName"></strong>?</p>
+                                <p class="text-muted">Nota: El estudiante dejará de tener acceso a la plataforma.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-danger">Sí, quiero deshabilitarlo</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
                 
                 <p th:if="${#lists.isEmpty(students)}" class="text-muted text-center" style="font-size: 18px; padding: 20px;">
                     Aún no se agrega ningún estudiante.
@@ -85,6 +185,38 @@
 
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".verUsuario").forEach(button => {
+                button.addEventListener("click", function () {
+                    document.getElementById("modalCodigo").textContent = this.getAttribute("data-codigo");
+                    document.getElementById("modalNombre").textContent = this.getAttribute("data-nombre");
+                    document.getElementById("modalApellido").textContent = this.getAttribute("data-apellido");
+                    document.getElementById("modalTipDoc").textContent = this.getAttribute("data-tipdoc");
+                    document.getElementById("modalNid").textContent = this.getAttribute("data-nid");
+                    document.getElementById("modalEmail").textContent = this.getAttribute("data-email");
+                    document.getElementById("modalCelular").textContent = this.getAttribute("data-celular");
+                    document.getElementById("modalEstado").textContent = this.getAttribute("data-estado");
+                    document.getElementById("modalGenero").textContent = this.getAttribute("data-genero");
+                    document.getElementById("modalDate").textContent = this.getAttribute("data-date");
+                    document.getElementById("modalDireccion").textContent = this.getAttribute("data-direccion");
+                });
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const deleteModal = document.getElementById('deleteModal');
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                let button = event.relatedTarget; // Botón que activó el modal
+                let nombre = button.getAttribute('data-nombre');
+                let apellido = button.getAttribute('data-apellido');
+    
+                let studentName = document.getElementById('studentName');
+                studentName.textContent = nombre + ' ' + apellido; // Muestra el nombre completo en el modal
+            });
+        });
+    </script>
 
     <footer th:replace="~{professor/master-page :: footer}"></footer>
 </body>

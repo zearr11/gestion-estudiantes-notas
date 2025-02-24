@@ -21,7 +21,7 @@
                         </div>
                     </section>
                     <section>
-                        <form th:action="@{/login}" method="post">
+                        <form th:action="@{/login}" method="post">                       
                             <div class="row formdiv">
                                 <div class="mb-3 col-12">
                                     <label for="inputUser" class="form-label">Codigo de Usuario</label>
@@ -37,11 +37,33 @@
                             </div>
                         </form>
                     </section>
+                    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                        <div id="toastError" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" 
+                             data-bs-delay="3000" th:if="${loginError}">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    Usuario y/o contraseña incorrectos.
+                                </div>
+                                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    </div>
                 </article>
             </div>
             <div class="background col-md-8"></div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var toastElement = document.getElementById("toastError");
+            if (toastElement) {
+                var toast = new bootstrap.Toast(toastElement);
+                toast.show();
+            }
+        });
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script th:src="@{/js/login-script.js}"></script>
 </body>

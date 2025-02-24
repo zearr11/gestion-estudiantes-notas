@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import pe.com.edugestor.edugestor.models.Professor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import pe.com.edugestor.edugestor.services.ProfessorService;
 
@@ -22,7 +23,14 @@ public class AuthController {
     private ProfessorService professorService;
 
     @GetMapping("/login")
-    public String goLoginView() {
+    public String goLoginView(@RequestParam(value = "error", required = false) String error, Model model) {
+
+        System.out.println(error);
+
+        if (error != null) {
+            model.addAttribute("loginError", true);
+        }
+        
         return "login";
     }
 
