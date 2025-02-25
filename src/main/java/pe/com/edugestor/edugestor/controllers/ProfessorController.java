@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import pe.com.edugestor.edugestor.models.Person;
 import pe.com.edugestor.edugestor.models.Professor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
+
 
 
 @Controller
@@ -40,7 +42,19 @@ public class ProfessorController {
      
     @GetMapping()
     public String goProfessorView(Model model) {
-        model.addAttribute("professors", this.professorService.listAllProfesor());
+        List<Professor> professorsInactives = new ArrayList<>();
+        List<Professor> professorsActives = new ArrayList<>();
+
+        for (Professor professor : this.professorService.listAllProfesor()) {
+            if (professor.getPerson().getUser().getState().equals("Inactivo")){
+                professorsInactives.add(professor);
+            }
+            else{
+                professorsActives.add(professor);
+            }
+        }
+        model.addAttribute("professors", professorsActives);
+        model.addAttribute("professorsInactive", professorsInactives);
         return "admin/professor-list";
     }
     
@@ -90,6 +104,20 @@ public class ProfessorController {
 
         return "redirect:/profesores";
     }
+
+    @PostMapping("/cambiar-estado")
+    public String deleteOrActivateProf(@RequestParam("idProfessorChange") Long idProfessor) {
+        Professor professorToChange = this.professorService.getProfessorByID(idProfessor);
+        if (professorToChange.getPerson().getUser().getState().equals("Activo")){
+            professorToChange.getPerson().getUser().setState("Inactivo");
+        }
+        else{
+            professorToChange.getPerson().getUser().setState("Activo");
+        }
+        this.professorService.updateProfessor(professorToChange);
+        return "redirect:/profesores";
+    }
+    
     
     
 }

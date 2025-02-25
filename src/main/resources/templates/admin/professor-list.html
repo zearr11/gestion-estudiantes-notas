@@ -3,13 +3,6 @@
 <head th:replace="~{admin/master-page :: head-mp}"></head>
 <body>
     <title>Lista de Profesores</title>
-    <style>
-        .details {
-            border-radius: 15px;
-            padding: 25px;
-            background-color: rgba(231, 231, 231, 0.74);
-        }
-    </style>
     <header th:replace="~{admin/master-page :: header-navbar}"></header>
 
     <div class="container body">
@@ -19,73 +12,347 @@
 
                 <h1 class="pb-2 mb-4">Lista de Profesores</h1>
 
-                <div class="row">
-
-                    <div class="col-8 col-md-4">
-                        <form class="d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="Buscar Profesor" aria-label="Search">
-                            <button class="btn btn-outline-success" type="submit">Buscar</button>
-                        </form>
+                <div>
+                    <div class="btn-group">
+                        <button type="button" id="btnActInact" class="btn btn-primary dropdown-toggle pe-5 ps-5" data-bs-toggle="dropdown" aria-expanded="false">
+                            Activos
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" id="selectActive" href="#">Activos</a></li>
+                            <li><a class="dropdown-item" id="selectInactive" href="#">Inactivos</a></li>
+                        </ul>
                     </div>
-
-                    <div class="col-4 col-md-4" style="text-align: right;">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                Activos
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Activos</a></li>
-                                <li><a class="dropdown-item" href="#">Inactivos</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
                 </div>
 
             </div>
         </div>
 
         <div class="row mb-4">
-            
-            <div class="col-12 col-md-8 mt-4">
-                <table class="table text-center">
-                    <thead class="table-dark">
-                        <tr>
-                            <th scope="col">Código</th>
-                            <th scope="col">Nombres</th>
-                            <th scope="col">Apellidos</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="professor : ${professors}">
-                            <td th:text="D + ${professor.person.nid}"></td>
-                            <td th:text="${professor.person.name}"></td>
-                            <td th:text="${professor.person.lastname}"></td>
-                            <td>
-                                <button class="btn btn-success" role="button">
-                                    <i class="bi bi-eye"></i>
-                                </button>
-                                <a th:href="@{'/profesores/editar/' + ${professor.idProfessor}}" class="btn btn-warning">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                                <button class="btn btn-danger" role="button">
-                                    <i class="bi bi-trash3-fill"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
 
-            <div class="details col-4 mt-4 align-items-center justify-content-center mx-auto">
-                <div class="mt-3">
-                    <p>Selecciona un profesor para ver más detalles.</p>
+            <div class="col-12 mt-4">
+                
+                <!-- Lista de Profesores Activos -->
+                <div th:if="${not #lists.isEmpty(professors)}" id="tactivos">
+                    <table class="table text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">Código</th>
+                                <th scope="col">Nombres</th>
+                                <th scope="col">Apellidos</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Celular</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="professor : ${professors}">
+                                <td th:text="${professor.person.user.codUser}"></td>
+                                <td th:text="${professor.person.name}"></td>
+                                <td th:text="${professor.person.lastname}"></td>
+                                <td th:text="${professor.person.email}"></td>
+                                <td th:text="${professor.person.numberPhone}"></td>
+                                <td>
+                                    <button class="btn btn-success verUsuario"
+                                            data-bs-toggle="modal" data-bs-target="#usuarioModal"
+                                            th:data-codigo="${professor.person.user.codUser}" 
+                                            th:data-nombre="${professor.person.name}" 
+                                            th:data-apellido="${professor.person.lastname}" 
+                                            th:data-tipdoc="${professor.person.typeNid}"
+                                            th:data-nid="${professor.person.nid}"
+                                            th:data-email="${professor.person.email}" 
+                                            th:data-celular="${professor.person.numberPhone}"
+                                            th:data-estado="${professor.person.user.state}"
+                                            th:data-genero="${professor.person.gender}"
+                                            th:data-date="${professor.person.dateBirth}"
+                                            th:data-direccion="${professor.person.address}">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <a th:href="@{'/profesores/editar/' + ${professor.idProfessor}}" class="btn btn-warning">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <button class="btn btn-danger eliminarUsuario"
+                                            data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                            th:data-id="${professor.idProfessor}" 
+                                            th:data-nombre="${professor.person.name}" 
+                                            th:data-apellido="${professor.person.lastname}">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
 
+                <!-- Lista de Profesores Inactivos -->
+                <div th:if="${not #lists.isEmpty(professorsInactive)}" id="tinactivos" style="display: none;">
+                    <table class="table text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col">Código</th>
+                                <th scope="col">Nombres</th>
+                                <th scope="col">Apellidos</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Celular</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="professorInactive : ${professorsInactive}">
+                                <td th:text="${professorInactive.person.user.codUser}"></td>
+                                <td th:text="${professorInactive.person.name}"></td>
+                                <td th:text="${professorInactive.person.lastname}"></td>
+                                <td th:text="${professorInactive.person.email}"></td>
+                                <td th:text="${professorInactive.person.numberPhone}"></td>
+                                <td>
+                                    <button class="btn btn-success verUsuario"
+                                            data-bs-toggle="modal" data-bs-target="#usuarioModal"
+                                            th:data-codigo="${professorInactive.person.user.codUser}" 
+                                            th:data-nombre="${professorInactive.person.name}" 
+                                            th:data-apellido="${professorInactive.person.lastname}" 
+                                            th:data-tipdoc="${professorInactive.person.typeNid}"
+                                            th:data-nid="${professorInactive.person.nid}"
+                                            th:data-email="${professorInactive.person.email}" 
+                                            th:data-celular="${professorInactive.person.numberPhone}"
+                                            th:data-estado="${professorInactive.person.user.state}"
+                                            th:data-genero="${professorInactive.person.gender}"
+                                            th:data-date="${professorInactive.person.dateBirth}"
+                                            th:data-direccion="${professorInactive.person.address}">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                    <button class="btn btn-primary habilitarUsuario"
+                                            data-bs-toggle="modal" data-bs-target="#habilitarModal"
+                                            th:data-id="${professorInactive.idProfessor}" 
+                                            th:data-nombre="${professorInactive.person.name}" 
+                                            th:data-apellido="${professorInactive.person.lastname}">
+                                            <i class="bi bi-arrow-up-circle-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+                <!-- Validacion Activos -->
+                <div id="tactivos" th:unless="${not #lists.isEmpty(professors)}" style="display: none;"></div>
+                <p id="activeIf" class="text-muted text-center" style="font-size: 18px; padding: 20px;"
+                    th:text="${#lists.isEmpty(professors) ? 'No se encontró ningún profesor activo.' : ''}">
+                </p>
+
+                <!-- Validacion Inactivos -->
+                <div id="tinactivos" th:unless="${not #lists.isEmpty(professorsInactive)}" style="display: none;"></div>
+                <p id="inactiveIf" class="text-muted text-center" style="display: none; font-size: 18px; padding: 20px;"
+                    th:text="${#lists.isEmpty(professorsInactive) ? 'No se encontró ningún profesor inactivo.' : ''}">
+                </p>
+
+
+                <!-- Modal View Professor -->
+                <div class="modal fade" id="usuarioModal" tabindex="-1" aria-labelledby="usuarioModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="usuarioModalLabel">Detalles del Usuario</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table table-bordered">
+                                    <tr>
+                                        <th>Código</th>
+                                        <td id="modalCodigo"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Nombres</th>
+                                        <td id="modalNombre"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Apellidos</th>
+                                        <td id="modalApellido"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tipo de Documento</th>
+                                        <td id="modalTipDoc"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Número de Documento</th>
+                                        <td id="modalNid"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email</th>
+                                        <td id="modalEmail"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Celular</th>
+                                        <td id="modalCelular"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Estado</th>
+                                        <td id="modalEstado"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Género</th>
+                                        <td id="modalGenero"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Fecha de Nacimiento</th>
+                                        <td id="modalDate"></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Dirección</th>
+                                        <td id="modalDireccion"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Delete -->
+                <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Deshabilitar profesor</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>¿Estás seguro de querer deshabilitar la cuenta del profesor <strong id="professorName"></strong>?</p>
+                                <p class="text-muted">Nota: El profesor dejará de tener acceso a la plataforma.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <form th:action="@{/profesores/cambiar-estado}" method="post">
+                                    <input type="hidden" id="deleteId" name="idProfessorChange">
+                                    <button type="submit" class="btn btn-danger">Sí, quiero deshabilitarlo</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Activate -->
+                <div class="modal fade" id="habilitarModal" tabindex="-1" aria-labelledby="habilitarModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Habilitar profesor</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>¿Estás seguro de querer habilitar la cuenta del profesor <strong id="professorName2"></strong>?</p>
+                                <p class="text-muted">Nota: El profesor podrá acceder nuevamente a la plataforma.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <form th:action="@{/profesores/cambiar-estado}" method="post">
+                                    <input type="hidden" id="activateId" name="idProfessorChange">
+                                    <button type="submit" class="btn btn-primary">Sí, quiero habilitarlo</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
+
+    <script>
+        // View Modal
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".verUsuario").forEach(button => {
+                button.addEventListener("click", function () {
+                    document.getElementById("modalCodigo").textContent = this.getAttribute("data-codigo");
+                    document.getElementById("modalNombre").textContent = this.getAttribute("data-nombre");
+                    document.getElementById("modalApellido").textContent = this.getAttribute("data-apellido");
+                    document.getElementById("modalTipDoc").textContent = this.getAttribute("data-tipdoc");
+                    document.getElementById("modalNid").textContent = this.getAttribute("data-nid");
+                    document.getElementById("modalEmail").textContent = this.getAttribute("data-email");
+                    document.getElementById("modalCelular").textContent = this.getAttribute("data-celular");
+                    document.getElementById("modalEstado").textContent = this.getAttribute("data-estado");
+                    document.getElementById("modalGenero").textContent = this.getAttribute("data-genero");
+                    document.getElementById("modalDate").textContent = this.getAttribute("data-date");
+                    document.getElementById("modalDireccion").textContent = this.getAttribute("data-direccion");
+                });
+            });
+        });
+
+        // Delete Modal
+        document.addEventListener("DOMContentLoaded", function () {
+            const deleteModal = document.getElementById('deleteModal');
+            deleteModal.addEventListener('show.bs.modal', function (event) {
+                let button = event.relatedTarget;
+                let nombre = button.getAttribute('data-nombre');
+                let apellido = button.getAttribute('data-apellido');
+                let id = button.getAttribute('data-id');
+    
+                let professorName = document.getElementById('professorName');
+                document.getElementById("deleteId").value = id;
+                professorName.textContent = nombre + ' ' + apellido;
+            });
+        });
+
+        // Activate Modal
+        document.addEventListener("DOMContentLoaded", function () {
+            const activateModal = document.getElementById('habilitarModal');
+            activateModal.addEventListener('show.bs.modal', function (event) {
+                let button = event.relatedTarget;
+                let nombre = button.getAttribute('data-nombre');
+                let apellido = button.getAttribute('data-apellido');
+                let id = button.getAttribute('data-id');
+    
+                let professorName = document.getElementById('professorName2');
+                document.getElementById("activateId").value = id;
+                professorName.textContent = nombre + ' ' + apellido;
+            });
+        });
+
+        // Seleccion de Activos
+        document.getElementById("selectActive").addEventListener("click", function() {
+            let tactivos = document.getElementById("tactivos");
+            let tinactivos = document.getElementById("tinactivos");
+            let btnActInact = document.getElementById("btnActInact");
+
+            let activeIf = document.getElementById("activeIf");
+            let inactiveIf = document.getElementById("inactiveIf");
+
+            if (tactivos && tinactivos && btnActInact && activeIf && inactiveIf) {
+                tactivos.style.display = "block";
+                tinactivos.style.display = "none";
+
+                activeIf.style.display = "block";
+                inactiveIf.style.display = "none";
+
+                btnActInact.classList.remove("btn-danger");
+                btnActInact.classList.add("btn-primary");
+                btnActInact.textContent = "Activos";
+            }
+        });
+
+        // Seleccion de Inactivos
+        document.getElementById("selectInactive").addEventListener("click", function() {
+            let tactivos = document.getElementById("tactivos");
+            let tinactivos = document.getElementById("tinactivos");
+            let btnActInact = document.getElementById("btnActInact");
+
+            let activeIf = document.getElementById("activeIf");
+            let inactiveIf = document.getElementById("inactiveIf");
+
+            if (tactivos && tinactivos && btnActInact && activeIf && inactiveIf) {
+                tinactivos.style.display = "block";
+                tactivos.style.display = "none";
+
+                inactiveIf.style.display = "block";
+                activeIf.style.display = "none";
+
+                btnActInact.classList.remove("btn-primary");
+                btnActInact.classList.add("btn-danger");
+                btnActInact.textContent = "Inactivos";
+            }
+        });
+    </script>
 
     <footer th:replace="~{admin/master-page :: footer}"></footer>
 </body>

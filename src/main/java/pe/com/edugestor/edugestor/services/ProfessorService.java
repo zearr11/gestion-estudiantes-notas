@@ -46,7 +46,7 @@ public class ProfessorService {
         return this.professorRepository.saveAndFlush(professorToUpdate);
     }
     
-    // Listar Ultimos 5 Profesores registrados
+    // Listar Ultimos 6 Profesores registrados
     public List<Professor> listLastSixProfessor() {
         return professorRepository.findTop6Professors();
     }

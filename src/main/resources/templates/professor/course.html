@@ -10,24 +10,21 @@
 
         <div class="row mt-4">
             <div class="mt-1">
-                <h1 class="pb-2 mb-4">Cursos</h1>
+                <h1 class="pb-2 mb-4">Mis Cursos</h1>
+                
                 <div class="row">
 
-                    <div class="col-8 col-md-4">
-                        <form class="d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="Buscar Curso" aria-label="Search">
-                            <button class="btn btn-outline-success" type="submit">Buscar</button>
-                        </form>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-primary" id="btn-new-course" onclick="showViewAddCourse()">Agregar Nuevo Curso</button>
                     </div>
-
-                    <div class="col-4 col-md-8" style="text-align: right;">
+                    <div class="col-6" style="text-align: right;">
                         <a th:href="@{/secciones/nuevo}" style="text-decoration: none;">
                             <button type="button" class="btn btn-success" id="btn-new-section">Crear Sección</button>
                         </a>
-                        <button type="button" class="btn btn-primary" id="btn-new-course" onclick="showViewAddCourse()">Agregar Nuevo Curso</button>
                     </div>
 
                 </div>
+
             </div>
         </div>
 
@@ -51,7 +48,7 @@
                                             <textarea class="form-control" name="description" id="description" placeholder="Detalle de Curso"></textarea>
                                         </div>
                                         <div class="text-center mt-4">
-                                            <button type="submit" class="btn btn-success">Agregar Nuevo Curso</button>
+                                            <button type="submit" class="btn btn-primary">Agregar Nuevo Curso</button>
                                         </div>
                                     </div>
                                 </form>

@@ -15,11 +15,11 @@
                     <section>
                         <div class="last-add mb-4">
                             
-                            <h4 class="mb-3">Ultimos Profesores Agregados</h4> 
+                            <h4 class="mb-3">Ultimos profesores agregados</h4> 
                             
                             <div class="row" style="justify-content: center;">
 
-                                <div class="card min-width col-md-4 me-auto me-md-2 mb-2" th:each="professor : ${professors}">
+                                <div class="card min-width col-md-4 me-auto me-md-2 mb-2" style="border-radius: 20px;" th:each="professor : ${professors}">
                                     <div class="card-body">
                                         <h5 class="card-title">Docente</h5>
                                         <h6 class="card-subtitle mb-2 text-body-secondary" th:text="|${professor.person.name} ${professor.person.lastname}|"></h6>
@@ -41,17 +41,21 @@
                     <section>
                         <div class="last-add mb-4">
                             
-                            <h4 class="mb-3">Ultimos Estudiantes Agregados</h4> 
+                            <h4 class="mb-4">Ultimos estudiantes agregados</h4> 
                             
                             <div class="row" style="justify-content: center;">
 
-                                <div class="card min-width col-md-4 me-auto me-md-2 mb-2">
+                                <div class="card min-width col-md-4 me-auto me-md-2 mb-2" style="border-radius: 20px;" th:each="student : ${students}">
                                     <div class="card-body">
                                         <h5 class="card-title">Estudiante</h5>
-                                        <h6 class="card-subtitle mb-2 text-body-secondary">Juan Luis Herrera Lopez</h6>
-                                        <p class="card-text">Edad: 25 años.<br>
-                                            Area: Computación e Informática.<br>
-                                            Celular: 987678231</p>
+                                        <h6 class="card-subtitle mb-2 text-body-secondary" th:text="|${student.person.name} ${student.person.lastname}|"></h6>
+                                        <p class="card-text">
+                                            <span>Tipo Documento: <span class="text-body-secondary" th:text="${student.person.typeNid}"></span></span><br>
+                                            <span>N° Documento: <span class="text-body-secondary" th:text="${student.person.nid}"></span></span><br>
+                                            <span>Género: <span class="text-body-secondary" th:text="${student.person.gender}"></span></span><br>
+                                            <span>Celular: <span class="text-body-secondary" th:text="${student.person.numberPhone}"></span></span><br>
+                                            <span>Email: <span class="text-body-secondary" th:text="${student.person.email}"></span></span>
+                                        </p>
                                     </div>
                                 </div>
 

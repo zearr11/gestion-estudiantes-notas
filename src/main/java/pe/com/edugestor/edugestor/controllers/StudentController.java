@@ -2,7 +2,6 @@ package pe.com.edugestor.edugestor.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import org.springframework.web.bind.annotation.RequestParam;
 import pe.com.edugestor.edugestor.models.Person;
 import pe.com.edugestor.edugestor.models.Professor;
 import pe.com.edugestor.edugestor.models.Student;
@@ -19,11 +18,11 @@ import pe.com.edugestor.edugestor.services.PersonService;
 import pe.com.edugestor.edugestor.services.ProfessorService;
 import pe.com.edugestor.edugestor.services.StudentService;
 import pe.com.edugestor.edugestor.services.UserService;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+
 
 
 
@@ -47,23 +46,26 @@ public class StudentController {
 
     @GetMapping()
     public String goViewStudents(Model model) {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         Professor professorLogIn = professorService.getProfessorLog(userDetails.getUsername());
-
-        List<Student> studentsProff = new ArrayList<>();
-
+        List<Student> studentsProffActives = new ArrayList<>();
+        List<Student> studentsInactives = new ArrayList<>();
         for (Student student : studentService.listAllStudents()) {
             for (int i = 0; student.getProfessor().size() > i; i++){
                 if (student.getProfessor().get(i).getIdProfessor() == professorLogIn.getIdProfessor()){
-                    studentsProff.add(student);
+                    if (student.getPerson().getUser().getState().equals("Activo")){
+                        studentsProffActives.add(student);
+                    }
+                    else{
+                        studentsInactives.add(student);
+                    }
                     break;
                 }
             }
         }
-
-        model.addAttribute("students", studentsProff);
+        model.addAttribute("students", studentsProffActives);
+        model.addAttribute("studentInactives", studentsInactives);
         return "professor/student-list";
     }
 
@@ -134,6 +136,19 @@ public class StudentController {
     }
     
     
+    @PostMapping("/cambiar-estado")
+    public String changeState(@RequestParam("idStudentChange") Long idStudent) {
+        System.out.println(idStudent);
+        Student studentToChange = this.studentService.getStudentByID(idStudent);
+        if (studentToChange.getPerson().getUser().getState().equals("Activo")){
+            studentToChange.getPerson().getUser().setState("Inactivo");
+        }
+        else{
+            studentToChange.getPerson().getUser().setState("Activo");
+        }
+        this.studentService.updateStudent(studentToChange);
+        return "redirect:/estudiantes";
+    }
     
     
 }

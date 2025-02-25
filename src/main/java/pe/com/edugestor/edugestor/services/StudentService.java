@@ -38,4 +38,8 @@ public class StudentService {
 
         return this.studentRepository.saveAndFlush(studentToUpdate);
     }
+
+    public List<Student> listLastSixStudents() {
+        return studentRepository.findTop6Students();
+    }
 }
