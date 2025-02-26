@@ -124,7 +124,7 @@ public class SectionController {
 
         List<Material> materials = new ArrayList<>();
         materials.add(new Material(null, "Introducción",
-        this.courseService.getCourseByID(id).getDescription(), null));
+        this.courseService.getCourseByID(id).getDescription(), null, null));
 
         // Creacion de objeto seccion y agregado de todos los datos
         Section sectionToSave = new Section(null, codSection, hourStart, hourEnd, "En curso", daysToSection, 

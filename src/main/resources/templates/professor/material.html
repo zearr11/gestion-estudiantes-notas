@@ -10,9 +10,7 @@
         <div class="row mt-4">
             <div class="mt-1">
                 <h1 class="pb-2 mb-4" th:text="${course.nameCourse}"></h1>
-                <div class="row">
-    
-                </div>
+                <div class="row"></div>
             </div>
         </div> 
     
@@ -24,6 +22,7 @@
                 </button>
             </div>
 
+            <!-- Modal add Sesion -->
             <div class="modal fade" id="addDescriptionModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -46,6 +45,7 @@
                 </div>
             </div>
 
+            <!-- Cbo Nav -->
             <div class="d-flex justify-content-end col-6">
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle ps-5 pe-5 pt-2 pb-2" type="button" id="sessionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
@@ -69,7 +69,7 @@
 
         <div class="last-add mb-4 mt-3">
             
-            <!-- Sesions -->
+            <!-- Cbo Alter Sesion Introduccion -->
             <div class="row view-sesions" name="view-sesions">
                 <div class="text-center mb-4">
                     <div class="dropdown">
@@ -85,24 +85,120 @@
                 </div>
             </div>
             
+            <!-- Content description session -->
             <div class="row view-sesions" name="view-sesions" style="justify-content: center;">
                 <div class="card min-width">
                     <div class="card-body">
                         <div id="data-material">
-                            <h4 class="mb-3">Resumen</h4>
-                            <p th:text="${#lists.size(materials) > 0 ? materials[0].descriptionMaterial : 'No hay descripción disponible'}"></p>
-                            <div class="border p-3 bg-light rounded">
-                                <button type="button" class="btn btn-primary d-flex align-items-center justify-content-left gap-2 col-12">
-                                    <i class="bi bi-plus-circle fs-5"></i>
-                                    Agregar recurso
-                                </button>
+                            <h4 id="tituloSesion" class="mb-3">Resumen</h4>
+                            <p id="descripcionSesion" th:text="${#lists.size(materials) > 0 ? materials[0].descriptionMaterial : 'No hay descripción disponible'}"></p>
+
+                            <div th:each="material : ${materials}">
+                                <div th:each="resource : ${resources}">
+                                    <div th:if="${material.idMaterial == resource.material.idMaterial}" class="mb-2">
+                                        <div class="border p-3 bg-light rounded infoAboutResources" style="display: none;">
+                                            <button class="seleccionBtn btn btn-primary d-flex align-items-center justify-content-left pb-2 pt-2 col-12" data-bs-toggle="modal" data-bs-target="#resourceModalView"
+                                                type="button" th:attr="data-linkWeb=${linksForResorces[resource.idResource]}" th:text="${resource.nameResource}" 
+                                                th:data-idResource="${resource.idResource}"
+                                                th:data-descriptionResour="${resource.descriptionResorce}"
+                                                th:data-nameResour="${resource.nameResource}"
+                                                th:data-typeResour="${resource.typeResource}"
+                                                th:data-dateUpload="${resource.uploadDate}"
+                                                th:data-nameMaterial="${material.titleMaterial}">
+                                            </button>
+                                        </div>
+                                    </div>                                    
+                                </div>
                             </div>
+
+                            <div id="addResourceBTN">
+                                <div class="border p-3 bg-light rounded">
+                                    <button type="button" class="btn btn-primary d-flex align-items-center justify-content-left gap-2 col-12" data-bs-toggle="modal" id="buttonResource" data-bs-target="#addResourceModal">
+                                        <i class="bi bi-plus-circle fs-5"></i>
+                                        Agregar recurso
+                                    </button>
+                                </div>
+                            </div>
+                            
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Students -->
+            <!-- Modal view Resource -->
+            <div class="modal fade" id="resourceModalView" tabindex="-1" aria-labelledby="nameResourceSesion" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="nameResourceSesion">Detalle de Recurso</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <span>Descripción:</span>
+                            <p class="text-muted" id="descriptionResourceSesion"></p>
+                            <span>Tipo de recurso:</span>
+                            <p class="text-muted" id="typeResourceSesion"></p>
+                            <span>Fecha de carga:</span>
+                            <p class="text-muted" id="dateUploadSesion"></p>
+                            <span>Enlace:</span>
+                            <div class="text-break">
+                                <a id="enlaceWebSession" href="#" class="d-block text-primary"></a>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>  
+
+
+            <!-- Modal add Resource -->
+            <div class="modal fade" id="addResourceModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalLabel">Nuevo Recurso</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="resourceForm" method="post" th:object="${resourceData}" th:action="@{/material/agregar-recurso}"> 
+                                <input type="hidden" name="nameSesion" id="nameSesion">
+                                <div class="mb-3">
+                                    <label for="nameResource" class="form-label">Título del recurso</label>
+                                    <input type="text" class="form-control" id="titleResourceD" name="titleResourceD" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description-resource" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="description-resource" name="descriptionResourceD" rows="4" required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="typeResource" class="form-label">Tipo de recurso</label>
+                                    <select name="typeResourceD" id="typeResource" class="form-select">
+                                        <option value="Selecciona">Selecciona</option>
+                                        <option value="Enlace Web">Enlace Web</option>
+                                        <!-- <option value="Archivo">Archivo</option> -->
+                                    </select>
+                                </div>
+                                <!-- Se cambiara dinamicamente de acuerdo al select -->
+                                <div hidden id="view-linkWeb" class="mb-4">
+                                    <label for="linkWeb" class="form-label">Link</label>
+                                    <input type="text" class="form-control" id="linkWeb" name="urlD">
+                                </div>
+                                <div hidden id="view-archive" class="mb-4">
+                                    <label for="archiveUp" class="form-label">Subir archivo</label>
+                                    <input type="text" class="form-control" id="archiveUp" name="archiveD">
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-success">Agregar recurso</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Students -->
             <div class="row view-students" style="justify-content: center; display: none;" id="view-students">
                 <div class="card min-width">
                     <div class="card-body">
@@ -147,7 +243,7 @@
                 </div>
             </div>
 
-            <!-- Information Course and Professor -->
+            <!-- Content Information Course and Professor -->
             <div class="row view-information" style="justify-content: center; display: none;" id="view-information">
                 <div class="card min-width">
                     <div class="card-body">
@@ -186,38 +282,80 @@
 
     <script>
 
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".seleccionBtn").forEach(button => {
+                button.addEventListener("click", function () {
+                    document.getElementById("nameResourceSesion").textContent = this.getAttribute("data-nameResour");
+                    document.getElementById("descriptionResourceSesion").textContent = this.getAttribute("data-descriptionResour");
+                    document.getElementById("typeResourceSesion").textContent = this.getAttribute("data-typeResour");
+                    document.getElementById("dateUploadSesion").textContent = this.getAttribute("data-dateUpload");
+                    var enlace = document.getElementById("enlaceWebSession");
+                    enlace.href = this.getAttribute("data-linkWeb");
+                    enlace.textContent = this.getAttribute("data-linkWeb");
+                    enlace.target = "_blank";
+                });
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function(){
+            document.getElementById("nameSesion").value = "Introducción";
+            var divsResources = document.getElementsByClassName("infoAboutResources");
+            for (var i = 0; i < divsResources.length; i++) {
+                var buttons = divsResources[i].getElementsByTagName("button"); 
+                for (var j = 0; j < buttons.length; j++) {
+                    var dataTitle = buttons[j].getAttribute("data-nameMaterial"); 
+                    if (dataTitle == "Introducción") {
+                        divsResources[i].style.display = "block";
+                        break;
+                    }
+                }
+            }
+        })
+
+        function addMaterial(titulo){
+            var divsResources = document.getElementsByClassName("infoAboutResources");
+            for (var i = 0; i < divsResources.length; i++) {
+                divsResources[i].style.display = "none";
+                var buttons = divsResources[i].getElementsByTagName("button"); 
+                for (var j = 0; j < buttons.length; j++) {
+                    var dataTitle = buttons[j].getAttribute("data-nameMaterial"); 
+                    if (dataTitle == titulo) {
+                        divsResources[i].style.display = "block";
+                        break;
+                    }
+                }
+            }
+        }
+
         function alternateView(event, element) {
             if (event) {
                 event.preventDefault(); // Evita que el enlace cambie la URL
             }
-        
             var title = element.getAttribute("data-title");
             var description = element.getAttribute("data-description");
-        
-            // Determina el encabezado basado en el título
+
             var header = (title === "Introducción") ? "<h4 class='mb-3'>Resumen</h4>" : "<h4 class='mb-3'>Temas</h4>";
-        
-            // Divide la descripción por líneas y las muestra tal cual sin modificar los guiones
+
             var descriptionHTML = "";
             if (description) {
                 var items = description.split("\n").map(line => line.trim()).filter(line => line.length > 0);
                 descriptionHTML = items.map(item => `<p>${item}</p>`).join("");
             }
-        
-            // Inserta el contenido en el div
-            document.getElementById("data-material").innerHTML = `
-                ${header}
-                ${descriptionHTML}
-                <div class="border p-3 bg-light rounded">
-                    <button type="button" class="btn btn-primary d-flex align-items-center justify-content-left gap-2 col-12">
-                        <i class="bi bi-plus-circle fs-5"></i>
-                        Agregar recurso
-                    </button>
-                </div>
-            `;
-        
+
+            document.getElementById("tituloSesion").innerHTML = `${header}`;
+            document.getElementById("descripcionSesion").innerHTML = `${descriptionHTML}`;
+            addMaterial(title);
+            document.getElementById("addResourceBTN").innerHTML = 
+                    `<div class="border p-3 bg-light rounded">
+                                    <button type="button" class="btn btn-primary d-flex align-items-center justify-content-left gap-2 col-12" data-bs-toggle="modal" id="buttonResource" data-bs-target="#addResourceModal">
+                                        <i class="bi bi-plus-circle fs-5"></i>
+                                        Agregar recurso
+                                    </button>
+                                </div>`;
+
             // Actualiza el texto del botón con el título de la sesión
             document.getElementById("numberSection").innerText = title;
+            document.getElementById("nameSesion").value = title;
         }
 
         function selectSession(textElement, numberElement){
@@ -253,6 +391,24 @@
             }
         }
 
+        document.getElementById("typeResource").addEventListener("change", function(){
+            var selectTypeResource = document.getElementById("typeResource").value;
+            var viewArchive = document.getElementById("view-archive");
+            var viewLinkWeb = document.getElementById("view-linkWeb");
+
+            if (selectTypeResource == "Selecciona"){
+                viewLinkWeb.hidden = true;
+                viewArchive.hidden = true;
+            }
+            else if (selectTypeResource == "Enlace Web"){
+                viewLinkWeb.hidden = false;
+                viewArchive.hidden = true;
+            }
+            else {
+                viewLinkWeb.hidden = true;
+                viewArchive.hidden = false;
+            }
+        })
 
     </script>
     

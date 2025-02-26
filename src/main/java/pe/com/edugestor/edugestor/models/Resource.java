@@ -1,7 +1,7 @@
 package pe.com.edugestor.edugestor.models;
 
+import java.time.LocalDateTime;
 import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,28 +16,35 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 @Entity
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "material")
-public class Material {
-
+@Getter
+@Setter
+@Table(name = "resource")
+public class Resource {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idMaterial;
+    private Long idResource;
 
-    @Column(name = "title_material")
-    private String titleMaterial;
+    @Column(name = "uploadDate")
+    private LocalDateTime uploadDate;
 
-    @Column(name = "description_material")
-    private String descriptionMaterial;
+    @Column(name = "name_resource")
+    private String nameResource;
+    
+    @Column(name = "type_resource")
+    private String typeResource;
+
+    @Column(name = "description_resource")
+    private String descriptionResorce;
+
+    @OneToMany(mappedBy = "resource")
+    private List<Link> links;
 
     @ManyToOne
-    @JoinColumn(name = "id_section")
-    private Section section;
-
-    @OneToMany(mappedBy = "material")
-    private List<Resource> resources;
+    @JoinColumn(name = "id_material")
+    private Material material;
 }
