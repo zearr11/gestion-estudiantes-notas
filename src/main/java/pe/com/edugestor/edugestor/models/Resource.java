@@ -38,7 +38,7 @@ public class Resource {
     @Column(name = "type_resource")
     private String typeResource;
 
-    @Column(name = "description_resource")
+    @Column(name = "description_resource", length = 2083)
     private String descriptionResorce;
 
     @OneToMany(mappedBy = "resource")
@@ -47,4 +47,7 @@ public class Resource {
     @ManyToOne
     @JoinColumn(name = "id_material")
     private Material material;
+
+    @OneToMany(mappedBy = "resourceEntity")
+    private List<Archive> lstArchives;
 }

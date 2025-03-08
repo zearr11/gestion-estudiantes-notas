@@ -31,7 +31,7 @@ public class Material {
     @Column(name = "title_material")
     private String titleMaterial;
 
-    @Column(name = "description_material")
+    @Column(name = "description_material", length = 2083)
     private String descriptionMaterial;
 
     @ManyToOne

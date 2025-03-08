@@ -1,43 +1,41 @@
 package pe.com.edugestor.edugestor.models;
 
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Getter
-@Setter
+@Table(name = "archive")
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "course")
-public class Course {
-    
+@Getter
+@Setter
+@Entity
+public class Archive {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idCourse;
+    private Long idArchive;
 
-    @Column(name = "name_course")
-    private String nameCourse;
+    @Column(name = "name_archive_original")
+    private String nameArchiveOriginal;
 
-    @Column(name = "description", length = 2083)
-    private String description;
+    @Column(name = "file_type")
+    private String fileType;
+
+    @Lob
+    @Column(columnDefinition = "MEDIUMBLOB", name = "resource_archive")
+    private byte[] resourceArchive;
 
     @ManyToOne
-    @JoinColumn(name = "id_professor")
-    private Professor professor;
-
-    @OneToMany(mappedBy = "course")
-    List<Section> sections;
+    @JoinColumn(name = "id_resource")
+    private Resource resourceEntity;
 }

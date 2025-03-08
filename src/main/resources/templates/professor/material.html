@@ -98,7 +98,10 @@
                                     <div th:if="${material.idMaterial == resource.material.idMaterial}" class="mb-2">
                                         <div class="border p-3 bg-light rounded infoAboutResources" style="display: none;">
                                             <button class="seleccionBtn btn btn-primary d-flex align-items-center justify-content-left pb-2 pt-2 col-12" data-bs-toggle="modal" data-bs-target="#resourceModalView"
-                                                type="button" th:attr="data-linkWeb=${linksForResorces[resource.idResource]}" th:text="${resource.nameResource}" 
+                                                type="button" th:attr="data-linkWeb=${linksForResorces[resource.idResource]}" 
+                                                th:data-archiveName="${lstArchivesNames[resource.idResource]}"
+                                                th:data-archiveID=${lstArchivesID[resource.idResource]}
+                                                th:text="${resource.nameResource}" 
                                                 th:data-idResource="${resource.idResource}"
                                                 th:data-descriptionResour="${resource.descriptionResorce}"
                                                 th:data-nameResour="${resource.nameResource}"
@@ -113,7 +116,7 @@
 
                             <div id="addResourceBTN">
                                 <div class="border p-3 bg-light rounded">
-                                    <button type="button" class="btn btn-primary d-flex align-items-center justify-content-left gap-2 col-12" data-bs-toggle="modal" id="buttonResource" data-bs-target="#addResourceModal">
+                                    <button type="button" class="btn btn-secondary d-flex align-items-center justify-content-left gap-2 col-12" data-bs-toggle="modal" id="buttonResource" data-bs-target="#addResourceModal">
                                         <i class="bi bi-plus-circle fs-5"></i>
                                         Agregar recurso
                                     </button>
@@ -140,9 +143,17 @@
                             <p class="text-muted" id="typeResourceSesion"></p>
                             <span>Fecha de carga:</span>
                             <p class="text-muted" id="dateUploadSesion"></p>
-                            <span>Enlace:</span>
-                            <div class="text-break">
-                                <a id="enlaceWebSession" href="#" class="d-block text-primary"></a>
+                            <div id="enlaceIf">
+                                <span>Enlace:</span>
+                                <div class="text-break">
+                                    <a id="enlaceWebSession" href="#" class="d-block text-primary"></a>
+                                </div>
+                            </div>
+                            <div id="archivoIf">
+                                <span>Descargar Archivo:</span>
+                                <div class="text-break mt-2">
+                                    <a id="archiveDownload" href="#" class="btn btn-success"></a>
+                                </div>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -162,7 +173,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="resourceForm" method="post" th:object="${resourceData}" th:action="@{/material/agregar-recurso}"> 
+                            <form id="resourceForm" method="post" th:object="${resourceData}" th:action="@{/material/agregar-recurso}" enctype="multipart/form-data"> 
                                 <input type="hidden" name="nameSesion" id="nameSesion">
                                 <div class="mb-3">
                                     <label for="nameResource" class="form-label">Título del recurso</label>
@@ -177,7 +188,7 @@
                                     <select name="typeResourceD" id="typeResource" class="form-select">
                                         <option value="Selecciona">Selecciona</option>
                                         <option value="Enlace Web">Enlace Web</option>
-                                        <!-- <option value="Archivo">Archivo</option> -->
+                                        <option value="Archivo">Archivo</option>
                                     </select>
                                 </div>
                                 <!-- Se cambiara dinamicamente de acuerdo al select -->
@@ -187,7 +198,7 @@
                                 </div>
                                 <div hidden id="view-archive" class="mb-4">
                                     <label for="archiveUp" class="form-label">Subir archivo</label>
-                                    <input type="text" class="form-control" id="archiveUp" name="archiveD">
+                                    <input type="file" class="form-control" id="archiveUp" name="fileArchiveD">
                                 </div>
                                 <div class="text-center">
                                     <button type="submit" class="btn btn-success">Agregar recurso</button>
@@ -285,17 +296,45 @@
         document.addEventListener("DOMContentLoaded", function () {
             document.querySelectorAll(".seleccionBtn").forEach(button => {
                 button.addEventListener("click", function () {
+
+                    // General
                     document.getElementById("nameResourceSesion").textContent = this.getAttribute("data-nameResour");
                     document.getElementById("descriptionResourceSesion").textContent = this.getAttribute("data-descriptionResour");
                     document.getElementById("typeResourceSesion").textContent = this.getAttribute("data-typeResour");
-                    document.getElementById("dateUploadSesion").textContent = this.getAttribute("data-dateUpload");
-                    var enlace = document.getElementById("enlaceWebSession");
-                    enlace.href = this.getAttribute("data-linkWeb");
-                    enlace.textContent = this.getAttribute("data-linkWeb");
-                    enlace.target = "_blank";
+                    document.getElementById("dateUploadSesion").textContent = formatDate(this.getAttribute("data-dateUpload"));
+
+                    // Hidden
+                    var viewEnlace = document.getElementById("enlaceIf");
+                    var viewArchive = document.getElementById("archivoIf");
+                    viewEnlace.style.display = "none";
+                    viewArchive.style.display = "none";
+
+                    if (this.getAttribute("data-linkWeb") !== null) {
+                        // Enlace:
+                        var enlace = document.getElementById("enlaceWebSession");
+                        viewEnlace.style.display = "block";
+                        enlace.href = this.getAttribute("data-linkWeb");
+                        enlace.textContent = this.getAttribute("data-linkWeb");
+                        enlace.target = "_blank";   
+                    }
+                    else {
+                        // Archivo:
+                        viewArchive.style.display = "block";
+                        var archive = document.getElementById("archiveDownload");
+                        archive.textContent = this.getAttribute("data-archiveName");
+                        archive.href = "/material/descargar/" + this.getAttribute("data-archiveID");
+                    }
                 });
             });
         });
+
+        function formatDate(dateString) {
+            let date = new Date(dateString);
+            let day = String(date.getDate()).padStart(2, '0');
+            let month = String(date.getMonth() + 1).padStart(2, '0');
+            let year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
 
         document.addEventListener("DOMContentLoaded", function(){
             document.getElementById("nameSesion").value = "Introducción";
@@ -347,7 +386,7 @@
             addMaterial(title);
             document.getElementById("addResourceBTN").innerHTML = 
                     `<div class="border p-3 bg-light rounded">
-                                    <button type="button" class="btn btn-primary d-flex align-items-center justify-content-left gap-2 col-12" data-bs-toggle="modal" id="buttonResource" data-bs-target="#addResourceModal">
+                                    <button type="button" class="btn btn-secondary d-flex align-items-center justify-content-left gap-2 col-12" data-bs-toggle="modal" id="buttonResource" data-bs-target="#addResourceModal">
                                         <i class="bi bi-plus-circle fs-5"></i>
                                         Agregar recurso
                                     </button>

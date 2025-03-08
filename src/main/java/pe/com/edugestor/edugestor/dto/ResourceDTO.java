@@ -1,5 +1,7 @@
 package pe.com.edugestor.edugestor.dto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,5 +17,5 @@ public class ResourceDTO {
     private String descriptionResourceD;
     private String typeResourceD;
     private String urlD;
-    private String archiveD;
+    private MultipartFile fileArchiveD;
 }
