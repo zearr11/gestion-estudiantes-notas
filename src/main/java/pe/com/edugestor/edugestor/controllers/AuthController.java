@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import pe.com.edugestor.edugestor.models.Professor;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import pe.com.edugestor.edugestor.services.ProfessorService;
 import pe.com.edugestor.edugestor.services.StudentService;
+import pe.com.edugestor.edugestor.services.UserService;
 
 
 
@@ -26,7 +28,13 @@ public class AuthController {
     private ProfessorService professorService;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private StudentService studentService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/login")
     public String goLoginView(@RequestParam(value = "error", required = false) String error, Model model) {
@@ -35,7 +43,7 @@ public class AuthController {
             model.addAttribute("loginError", "Usuario y/o contraseña inválidos.");
         }
 
-        return "login";
+        return "public/login";
     }
 
     @GetMapping("/")
@@ -45,18 +53,26 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String rol = userDetails.getAuthorities().iterator().next().getAuthority();
 
-        if ("ROLE_Admin".equals(rol)) { 
-            List<Professor> lstProfessor = professorService.listLastSixProfessor();
-            List<Student> lstStudents = studentService.listLastSixStudents();
-            model.addAttribute("professors", lstProfessor);
-            model.addAttribute("students", lstStudents);
-            return "admin/main-menu";
-        } 
-        else if ("ROLE_Profesor".equals(rol)) {
-            return "professor/main-menu";
-        } 
+        String storedPassword = userService.getUserByCod(userDetails.getUsername()).getPassword();
+        String username = userDetails.getUsername();
+
+        if (passwordEncoder.matches(username, storedPassword)){
+            return "public/logged/userlog-change-pass";
+        }
         else {
-            return "student/main-menu";
+            if ("ROLE_Admin".equals(rol)) { 
+                List<Professor> lstProfessor = professorService.listLastSixProfessor();
+                List<Student> lstStudents = studentService.listLastSixStudents();
+                model.addAttribute("professors", lstProfessor);
+                model.addAttribute("students", lstStudents);
+                return "admin/main-menu";
+            } 
+            else if ("ROLE_Profesor".equals(rol)) {
+                return "professor/main-menu";
+            } 
+            else {
+                return "student/main-menu";
+            }
         }
         
     }

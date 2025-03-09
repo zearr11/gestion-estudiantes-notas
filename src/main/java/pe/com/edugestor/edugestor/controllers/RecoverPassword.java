@@ -3,6 +3,9 @@ package pe.com.edugestor.edugestor.controllers;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,7 +38,7 @@ public class RecoverPassword {
     
     @GetMapping
     public String goViewRecoverPassword() {
-        return "recover-password";
+        return "public/not-log/recover-password";
     }
 
     Person dataPersonValidation;
@@ -48,7 +51,7 @@ public class RecoverPassword {
         
         if (usuario == null) {
             model.addAttribute("error", "El código de usuario no existe.");
-            return "recover-password";
+            return "public/not-log/recover-password";
         }
 
         dataPersonValidation = personService.getPersonByUser(usuario);
@@ -56,7 +59,7 @@ public class RecoverPassword {
 
         new Thread(() -> emailService.sendCodeRecuperation(dataPersonValidation.getEmail(), codigoRecuperacion)).start();
 
-        return "verified-cod";
+        return "public/not-log/verified-cod";
     }
 
     @PostMapping("/verificar-codigo")
@@ -64,15 +67,28 @@ public class RecoverPassword {
 
         if (!codigoIngresado.equals(codigoRecuperacion)) {
             model.addAttribute("error", "El código ingresado es incorrecto.");
-            return "verified-cod";
+            return "public/not-log/verified-cod";
         }
 
-        return "change-password-cod";
+        return "public/not-log/change-password-cod";
     }
 
     @PostMapping("/actualizar-password")
     public String actualizarPassword(@RequestParam String nuevaPassword,
                                      @RequestParam String confirmarPassword) {
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (!authentication.getAuthorities().iterator().next().getAuthority().equals("ROLE_ANONYMOUS")) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            User userLoged = userService.getUserByCod(userDetails.getUsername());
+
+            userLoged.setPassword(passwordEncoder.encode(nuevaPassword));
+            userService.updateUser(userLoged);
+
+            return "redirect:/logout";
+        }
+
         User userVerified = dataPersonValidation.getUser();
         userVerified.setPassword(passwordEncoder.encode(nuevaPassword));
         userService.updateUser(userVerified);

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Contraseña</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/jpg" th:href="@{/img/logo.jpg}">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url(/img/recuperar-clave.jpg) no-repeat center center/cover;
+        }
+        #contenedor {
+            background-color: white;
+            display: flex;
+            width: 90%;
+            max-width: 400px;
+            padding: 40px;
+            flex-direction: column;
+            border-radius: 17px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #logo {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
+        h3 {
+            margin-top: 15px;
+            font-size: 1.2rem;
+        }
+        #cuerpo {
+            text-align: center;
+            font-size: 14px;
+        }
+        #formu {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div id="contenedor" class="text-center">
+        <div id="contenido">
+            <div id="cabezera">
+                <img th:src="@{/img/logo.jpg}" alt="logo-edugestor" id="logo">
+                <h3>Crea tu nueva contraseña</h3>
+            </div>
+            <div id="cuerpo">
+                <p>Hemos verificado que este es tu primer inicio de sesión con esta cuenta. Por seguridad, debes cambiar tu contraseña.</p>
+            </div>
+            <div id="formu"> 
+                <form id="passwordForm" th:action="@{/recuperar-clave/actualizar-password}" method="post">
+                    <div class="mb-3">
+                        <label for="nuevaPassword" class="form-label">Nueva Contraseña:</label>
+                        <input type="password" id="nuevaPassword" name="nuevaPassword" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmarPassword" class="form-label">Confirma la Contraseña:</label>
+                        <input type="password" id="confirmarPassword" name="confirmarPassword" class="form-control" required>
+                    </div>
+                    <ul id="passwordCriteria">
+                        <li id="lengthCriteria">Al menos 8 caracteres</li>
+                        <li id="uppercaseCriteria">Al menos una letra mayúscula</li>
+                        <li id="lowercaseCriteria">Al menos una letra minúscula</li>
+                        <li id="numberCriteria">Al menos un número</li>
+                        <li id="specialCharCriteria">Al menos un carácter especial (!@#$%^&*...)</li>
+                    </ul>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Actualizar Contraseña</button>
+                    </div>
+                </form>
+            </div>
+            <div class="text-center mt-3">
+                <a th:href="@{/logout}">Volver al inicio de sesión</a>
+            </div>
+        </div>
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="toastError" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+                <div class="d-flex">
+                    <div class="toast-body" id="toastMessage"></div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+        document.getElementById("passwordForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            let password = document.getElementById("nuevaPassword").value;
+            let confirmPassword = document.getElementById("confirmarPassword").value;
+            let toastElement = new bootstrap.Toast(document.getElementById("toastError"));
+            let toastMessage = document.getElementById("toastMessage");
+            
+            let msg = "";
+            if (password.length < 8) msg = ("La contraseña debe tener al menos 8 caracteres.");
+            else if (!/[A-Z]/.test(password)) msg = ("Debe incluir al menos una letra mayúscula.");
+            else if (!/[a-z]/.test(password)) msg = ("Debe incluir al menos una letra minúscula.");
+            else if (!/[0-9]/.test(password)) msg = ("Debe incluir al menos un número.");
+            else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) msg = ("Debe incluir al menos un carácter especial.");
+            else if (password !== confirmPassword) msg = ("Las contraseñas no coinciden.");
+            
+            if (msg !== "") {
+                toastMessage.textContent = msg;
+                toastElement.show();
+            }
+            else{
+                this.submit();
+            }
+        });
+
+        document.getElementById("nuevaPassword").addEventListener("input", function () {
+            let password = this.value;
+        
+            document.getElementById("lengthCriteria").classList.toggle("text-success", password.length >= 8);
+            document.getElementById("lengthCriteria").classList.toggle("text-danger", password.length < 8);
+        
+            document.getElementById("uppercaseCriteria").classList.toggle("text-success", /[A-Z]/.test(password));
+            document.getElementById("uppercaseCriteria").classList.toggle("text-danger", !/[A-Z]/.test(password));
+        
+            document.getElementById("lowercaseCriteria").classList.toggle("text-success", /[a-z]/.test(password));
+            document.getElementById("lowercaseCriteria").classList.toggle("text-danger", !/[a-z]/.test(password));
+        
+            document.getElementById("numberCriteria").classList.toggle("text-success", /[0-9]/.test(password));
+            document.getElementById("numberCriteria").classList.toggle("text-danger", !/[0-9]/.test(password));
+        
+            document.getElementById("specialCharCriteria").classList.toggle("text-success", /[!@#$%^&*(),.?":{}|<>]/.test(password));
+            document.getElementById("specialCharCriteria").classList.toggle("text-danger", !/[!@#$%^&*(),.?":{}|<>]/.test(password));
+        });
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -23,7 +23,7 @@ public class SecurityConfig {
         http
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/public/**", "/css/**", "/js/**", "/img/**", 
+            .requestMatchers("/css/**", "/js/**", "/img/**", 
             "/recuperar-clave", "/recuperar-clave/envio-codigo", "/recuperar-clave/verificar-codigo",
             "/recuperar-clave/actualizar-password").permitAll()
             .anyRequest().authenticated()
