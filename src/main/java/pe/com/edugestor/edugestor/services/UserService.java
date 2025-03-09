@@ -31,6 +31,10 @@ public class UserService {
         return this.userRepository.findById(id).orElse(null);
     }
 
+    public User getUserByCod(String cod){
+        return this.userRepository.findByCodUser(cod).orElse(null);
+    }
+
     public User updateUser(User entity){
         User userToUpdate = this.userRepository.findById(entity.getIdUser()).orElse(null);
 

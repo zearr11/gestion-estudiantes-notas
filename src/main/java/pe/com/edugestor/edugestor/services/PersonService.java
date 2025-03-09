@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import pe.com.edugestor.edugestor.models.Person;
+import pe.com.edugestor.edugestor.models.User;
 import pe.com.edugestor.edugestor.repositories.PersonRepository;
 
 @Service
@@ -24,6 +25,10 @@ public class PersonService {
     // Obtener el registro de una persona por id
     public Person getPersonById(Long id){
         return this.personRepository.findById(id).orElse(null);
+    }
+
+    public Person getPersonByUser(User user){
+        return this.personRepository.findByUser(user).orElse(null);
     }
 
     public Person createPerson(Person entity){

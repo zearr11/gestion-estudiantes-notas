@@ -15,11 +15,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String codUser) throws UsernameNotFoundException {
         pe.com.edugestor.edugestor.models.User user = userRepository.findByCodUser(codUser)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsernameNotFoundException(""));
 
-        // Validar si el usuario está inactivo
         if (!"Activo".equalsIgnoreCase(user.getState())) {
-            throw new UsernameNotFoundException("El usuario está inactivo");
+            throw new UsernameNotFoundException("");
         }
 
         return org.springframework.security.core.userdetails.User.withUsername(user.getCodUser())

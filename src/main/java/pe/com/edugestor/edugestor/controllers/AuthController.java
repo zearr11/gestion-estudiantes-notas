@@ -31,10 +31,10 @@ public class AuthController {
     @GetMapping("/login")
     public String goLoginView(@RequestParam(value = "error", required = false) String error, Model model) {
 
-        if (error != null) {
-            model.addAttribute("loginError", true);
+        if ("credenciales_invalidas".equals(error)) {
+            model.addAttribute("loginError", "Usuario y/o contraseña inválidos.");
         }
-        
+
         return "login";
     }
 

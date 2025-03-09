@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Código</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url(/img/recuperar-clave.jpg) no-repeat center center/cover;
+        }
+        #contenedor {
+            background-color: white;
+            display: flex;
+            width: 90%;
+            max-width: 400px;
+            padding: 40px;
+            flex-direction: column;
+            border-radius: 17px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #logo {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
+        h3 {
+            margin-top: 15px;
+            font-size: 1.2rem;
+        }
+        #cuerpo {
+            text-align: center;
+            font-size: 14px;
+        }
+        #formu {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div id="contenedor" class="text-center">
+        <div id="contenido">
+            <div id="cabezera">
+                <img th:src="@{/img/logo.jpg}" alt="logo-edugestor" id="logo">
+                <h3>Verifica tu código</h3>
+            </div>
+            <div id="cuerpo">
+                <p>Ingresa el código de verificación que enviamos a tu correo para continuar con el proceso.</p>
+            </div>
+            <div id="formu">
+                <form th:action="@{/recuperar-clave/verificar-codigo}" method="post">
+                    <div class="mb-3">
+                        <label for="codigoIngresado" class="form-label">Código de Verificación:</label>
+                        <input type="text" id="codigoIngresado" name="codigoIngresado" class="form-control" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Validar Código</button>
+                    </div>
+                </form>
+            </div>
+            <div class="text-center mt-3">
+                <a th:href="@{/login}">Volver al inicio de sesión</a>
+            </div>
+        </div>
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="toastError" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" 
+                 data-bs-delay="3000" th:if="${error}">
+                <div class="d-flex">
+                    <div class="toast-body" th:text="${error}">
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var toastElement = document.getElementById("toastError");
+            if (toastElement) {
+                var toast = new bootstrap.Toast(toastElement);
+                toast.show();
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

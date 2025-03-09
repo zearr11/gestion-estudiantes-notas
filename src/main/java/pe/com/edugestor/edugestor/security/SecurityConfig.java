@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
 import pe.com.edugestor.edugestor.services.UserDetailsServiceImpl;
 
 @Configuration
@@ -24,7 +23,9 @@ public class SecurityConfig {
         http
         .csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/public/**", "/css/**", "/js/**", "/img/**").permitAll()
+            .requestMatchers("/public/**", "/css/**", "/js/**", "/img/**", 
+            "/recuperar-clave", "/recuperar-clave/envio-codigo", "/recuperar-clave/verificar-codigo",
+            "/recuperar-clave/actualizar-password").permitAll()
             .anyRequest().authenticated()
         )
         .formLogin(form -> form
@@ -32,6 +33,7 @@ public class SecurityConfig {
             .usernameParameter("username")
             .passwordParameter("password")
             .defaultSuccessUrl("/", true)
+            .failureUrl("/login?error=credenciales_invalidas")
             .permitAll()
         )
         .logout(logout -> logout

@@ -36,14 +36,15 @@
                                 </div>
                             </div>
                         </form>
+                        <div class="text-center mt-4">
+                            <a th:href="@{/recuperar-clave}" class="text-white">Olvidé mi contraseña</a>
+                        </div>
                     </section>
                     <div class="toast-container position-fixed bottom-0 end-0 p-3">
                         <div id="toastError" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" 
                              data-bs-delay="3000" th:if="${loginError}">
                             <div class="d-flex">
-                                <div class="toast-body">
-                                    Usuario y/o contraseña incorrectos.
-                                </div>
+                                <div class="toast-body" th:text="${loginError}"></div>
                                 <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
                             </div>
                         </div>
