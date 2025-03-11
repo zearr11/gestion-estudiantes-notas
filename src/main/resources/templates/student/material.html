@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es" xmlns="https://www.thymeleaf.org">
-  <head th:replace="~{professor/master-page :: head-mp}"></head>
+  <head th:replace="~{student/master-page :: head-mp}" ></head>
   <body>
-    <header th:replace="~{professor/master-page :: header-navbar}"></header>
+    <header th:replace="~{student/master-page :: header-navbar}"></header>
     
-    <title>Sección</title>
+    <title>Material Didáctico</title>
     
     <div class="container body">
       
@@ -17,35 +17,8 @@
       
       <!-- Botones y navegación -->
       <div class="row mb-4">
-        <div class="col-6">
-          <button type="button" class="btn btn-success ps-5 pe-5 pt-2 pb-2" data-bs-toggle="modal" data-bs-target="#addDescriptionModal">
-            Agregar Nueva sesión
-          </button>
-        </div>
-        <!-- Modal para agregar sesión -->
-        <div class="modal fade" id="addDescriptionModal" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Nueva Sesión</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <form id="descriptionForm" method="post" th:action="@{/material/agregar-sesion}">
-                  <div class="mb-3">
-                    <label for="description-sesion" class="form-label">Temas de la Sesión</label>
-                    <textarea class="form-control" id="description-sesion" name="description-sesion" rows="4" required></textarea>
-                  </div>
-                  <div class="text-center">
-                    <button type="submit" class="btn btn-success">Agregar</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
         <!-- Dropdown de navegación entre sesiones, estudiantes e información -->
-        <div class="d-flex justify-content-end col-6">
+        <div class="d-flex justify-content-end">
           <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle ps-5 pe-5 pt-2 pb-2" type="button" id="sessionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
               Sesiones
@@ -116,29 +89,101 @@
                                 th:data-nameMaterial="${material.titleMaterial}"
                                 th:data-examDateOptional="${lstExamsDates[resource.idResource]}"
                                 th:data-examTimeOptional="${lstExamsTimes[resource.idResource]}"
+                                th:data-idExamOptional="${lstIdExamResources[resource.idResource]}"
+                                th:data-idUploadExamOptional="${idUploadExams[resource.idResource]}"
+                                th:data-textExam="${textUploadExams[resource.idResource]}" 
+                                th:data-dateUpExam="${dateUploadExams[resource.idResource]}"
+                                th:data-idArchiveExamUp="${IDArchiveExamsOptionals[resource.idResource]}"
+                                th:data-ArchiveExamNameOrigin="${ArchiveExamsNameOriginal[resource.idResource]}"
+                                th:data-GradeCommentary="${NoteCommentarys[resource.idResource]}"
+                                th:data-GradeAsign="${NoteGrades[resource.idResource]}"
                                 th:text="${resource.nameResource}">
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
-
-                <!-- Botón para agregar nuevo recurso -->
-                <div id="addResourceBTN">
-                  <div class="border p-3 bg-light rounded">
-                    <button type="button" class="btn btn-secondary d-flex align-items-center justify-content-left gap-2 col-12" data-bs-toggle="modal" id="buttonResource" data-bs-target="#addResourceModal">
-                      <i class="bi bi-plus-circle fs-5"></i>
-                      Agregar material
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Modal para Agregar Entrega -->
+        <div class="modal fade" id="addExamUpModalView" tabindex="-1" aria-labelledby="nameExamUpModalView">
+          <div class="modal-dialog modal-dialog-centered">
+            <!-- Envolvemos el contenido del modal en el form -->
+            <form th:action="@{/material/entrega-examen}" method="post" th:object="${examUpload}" enctype="multipart/form-data">
+              
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="nameExamUpModalView">Entrega de Evaluación</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+        
+                <div class="modal-body">
+                  <input type="hidden" name="idResourceState" id="idResourceState">
+                  <input type="hidden" name="idExamOptionalForm" id="idExamOptionalForm">
+                  <div class="mb-3">
+                    <textarea class="form-control" id="addTextOpcional" name="addTextOpcional" rows="4"></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label for="add-file-opcional" class="form-label">Archivo</label>
+                    <input class="form-control" type="file" id="addFileOpcional" name="addFileOpcional">
+                  </div>
+                </div>
+        
+                <!-- Modal Footer con botones alineados a la derecha -->
+                <div class="modal-footer justify-content-end">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-target="#resourceModalView" data-bs-toggle="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Modal para Editar Entrega -->
+        <div class="modal fade" id="editExamUpModalView" tabindex="-1" aria-labelledby="nameEditExamUpModalView">
+          <div class="modal-dialog modal-dialog-centered">
+            <!-- Envolvemos el contenido del modal en el form -->
+            <form th:action="@{/material/editar-examen}" method="post" th:object="${examEdit}" enctype="multipart/form-data">
+              
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="nameEditExamUpModalView">Edición de Entrega</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+        
+                <div class="modal-body">
+                  <input type="hidden" name="idArchiveExamUp" id="idArchiveExamUp">
+                  <input type="hidden" name="idUploadExam" id="idUploadExam">
+                  <div class="mb-3">
+                    <textarea class="form-control" id="editTextOpcional" name="editTextOpcional" rows="4"></textarea>
+                  </div>
+                  <div id="SelectArchiveMantenter" class="mb-3">
+                    <select class="form-select" name="selectArchive" id="selectArchive">
+                      <option value="0">Mantener el mismo archivo</option>
+                      <option value="1">Cambiar Archivo</option>  
+                    </select>
+                  </div>
+                  <div class="mb-3" id="ArchiveEditDiv">
+                    <label for="editFileOpcional" class="form-label">Archivo</label>
+                    <input class="form-control" type="file" id="editFileOpcional" name="editFileOpcional">
+                  </div>
+                </div>
+        
+                <!-- Modal Footer con botones alineados a la derecha -->
+                <div class="modal-footer justify-content-end">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-target="#resourceModalView" data-bs-toggle="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-success">Guardar Cambios</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
         
         <!-- Modal para visualizar recurso -->
-        <div class="modal fade" id="resourceModalView" tabindex="-1" aria-labelledby="nameResourceSesion" aria-hidden="true">
+        <div class="modal fade modal-lg" id="resourceModalView" tabindex="-1">
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <div class="modal-header">
@@ -172,6 +217,43 @@
                     <a id="archiveDownload" href="#" class="btn btn-success"></a>
                   </div>
                 </div>
+                <!------------------------------------------>
+                <div id="StateEntrega" class="mt-3">
+                  <span>Estado de la entrega:</span>
+                  <div id="AddEntrega" class="mt-2 mb-3">
+                    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#addExamUpModalView">Agregar Entrega</button>
+                  </div>
+                  <div id="EditEntrega" class="mt-2 mb-3">
+                    <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#editExamUpModalView">Editar Entrega</button>
+                  </div>
+                  <div>
+                    <table class="table table-bordered" id="tableState">
+                      <tr>
+                        <th>Estado</th>
+                        <td id="stateEnvioText">none</td>
+                      </tr>
+                      <tr>
+                        <th>Calificación</th>
+                        <td id="calificationID">none</td>
+                      </tr>
+                      <tr id="trEnvio">
+                        <th>Fecha de Envio</th>
+                        <td id="dateEnvioExam">none</td>
+                      </tr>
+                      <tr id="trArchivoSend">
+                        <th>Archivo Enviado</th>
+                        <td>
+                          <a id="linkToArchive" href="#" class="btn btn-primary"></a>
+                        </td>
+                      </tr>
+                      <tr id="comentarioDocente">
+                        <th>Comentario del Docente</th>
+                        <td id="commentaryDocente">none</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+                <!------------------------------------------>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -179,69 +261,6 @@
             </div>
           </div>
         </div>  
-
-        <!-- Modal para agregar recurso -->
-        <div class="modal fade" id="addResourceModal" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="modalLabel">Nuevo Material</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <form id="resourceForm" method="post" th:object="${resourceData}" th:action="@{/material/agregar-recurso}" enctype="multipart/form-data"> 
-                  <input type="hidden" name="nameSesion" id="nameSesion">
-                  <div class="mb-3">
-                    <label for="titleResourceD" class="form-label">Título del material</label>
-                    <input type="text" class="form-control" id="titleResourceD" name="titleResourceD" required>
-                  </div>
-                  <div class="mb-3">
-                    <label for="description-resource" class="form-label">Descripción</label>
-                    <textarea class="form-control" id="description-resource" name="descriptionResourceD" rows="4" required></textarea>
-                  </div>
-                  <div class="mb-3">
-                    <label for="typeMaterial" class="form-label">Tipo de material</label>
-                    <select name="typeMaterialOption" id="typeMaterial" class="form-select">
-                      <option value="Recurso" selected>Recurso</option>
-                      <option value="Evaluacion">Evaluación</option>
-                    </select>
-                  </div>
-
-                  <div hidden id="view-dateLimit" class="mb-4">
-                    <label for="date-limit" class="form-label">Fecha límite</label>
-                    <input type="date" class="form-control" id="date-limit" name="limitDate">
-                  </div>
-                  <div hidden id="view-timeLimit" class="mb-4">
-                    <label for="date-timeLimit" class="form-label">Hora límite</label>
-                    <input type="time" class="form-control" id="date-timeLimit" name="limiTime">
-                  </div>
-
-                  <div class="mb-3" id="resourceOptions">
-                    <label for="typeResource" class="form-label">Tipo de recurso</label>
-                    <select name="typeResourceD" id="typeResource" class="form-select">
-                      <option value="Selecciona">Selecciona</option>
-                      <option value="Enlace Web">Enlace Web</option>
-                      <option value="Archivo">Archivo</option>
-                    </select>
-                  </div>
-                  <!-- Se muestra dinámicamente según el select resourceOptions -->
-                  <div hidden id="view-linkWeb" class="mb-4">
-                    <label for="linkWeb" class="form-label">Link</label>
-                    <input type="text" class="form-control" id="linkWeb" name="urlD">
-                  </div>
-                  <div hidden id="view-archive" class="mb-4">
-                    <label for="archiveUp" id="archiveUpLabel" class="form-label">Subir archivo</label>
-                    <input type="file" class="form-control" id="archiveUp" name="fileArchiveD">
-                  </div>
-                  
-                  <div class="text-center">
-                    <button id="btnAddMaterialExam" type="submit" class="btn btn-success">Agregar material</button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <!-- Sección de Estudiantes -->
         <div class="row view-students" style="justify-content: center; display: none;" id="view-students">
@@ -314,7 +333,6 @@
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         // Inicialización de sesión por defecto
-        document.getElementById("nameSesion").value = "Introducción";
         const resourceDivs = document.getElementsByClassName("infoAboutResources");
         for (let div of resourceDivs) {
           const btns = div.getElementsByTagName("button");
@@ -325,7 +343,7 @@
             }
           }
         }
-        
+
         // Agregar event listener para cada botón de recurso
         const resourceButtons = document.querySelectorAll(".seleccionBtn");
         resourceButtons.forEach(button => {
@@ -334,6 +352,8 @@
             document.getElementById("descriptionResourceSesion").textContent = this.getAttribute("data-descriptionResour");
             document.getElementById("typeResourceSesion").textContent = this.getAttribute("data-typeResour");
             document.getElementById("dateUploadSesion").textContent = formatDate(this.getAttribute("data-dateUpload"));
+            const stateEntrega = document.getElementById("StateEntrega"); 
+            stateEntrega.style.display = "none"; // Ocultar la sección de entrega por defecto
 
             if (this.getAttribute("data-typeResour") === "Evaluacion") {
                 let dataExam = document.getElementById("dataExam");
@@ -347,6 +367,87 @@
                     let [year, month, day] = rawDate.split("-");
                     dateLimitUp.textContent = `${day}/${month}/${year}`;
                 }
+
+                // ------------------------------------------------------------------------ //
+                document.getElementById("idResourceState").value = this.getAttribute("data-idResource");
+                let AddEntrega = document.getElementById("AddEntrega");
+                let EditEntrega = document.getElementById("EditEntrega");
+                let stateEnvioText = document.getElementById("stateEnvioText");
+                let calificationID = document.getElementById("calificationID");
+                let trEnvio = document.getElementById("trEnvio");
+                let dateEnvioExam = document.getElementById("dateEnvioExam");
+                let comentarioDocente = document.getElementById("comentarioDocente");
+                let tdCommentaryDocente = document.getElementById("commentaryDocente");
+                let trArchivoSend = document.getElementById("trArchivoSend");
+                
+                let DOMidArchiveExamUp = document.getElementById("idArchiveExamUp");
+                let DOMidUploadExam = document.getElementById("idUploadExam");
+                let DOMidExamOptionalForm = document.getElementById("idExamOptionalForm");
+
+                let DOMeditTextOpcional = document.getElementById("editTextOpcional");
+
+                stateEntrega.style.display = "block"; // Mostrar la sección de entrega
+                AddEntrega.style.display = "none"; // Ocultar botón de agregar entrega
+                EditEntrega.style.display = "none"; // Ocultar botón de editar entrega
+                trEnvio.style.display = "none"; // Ocultar fila de fecha de envio
+                comentarioDocente.style.display = "none"; // Ocultar fila de comentario del docente
+                trArchivoSend.style.display = "none"; // Ocultar fila de archivo enviado
+
+                let idUploadExam = this.getAttribute("data-idUploadExamOptional"); 
+                let textExam = this.getAttribute("data-textExam"); // Texto del examen subido
+                let dateUpExam = this.getAttribute("data-dateUpExam"); // Fecha de envio del examen
+                let idArchiveExamUp = this.getAttribute("data-idArchiveExamUp"); // ID del archivo subido
+                let ArchiveExamNameOrigin = this.getAttribute("data-ArchiveExamNameOrigin"); // Nombre del archivo original
+                let GradeCommentary = this.getAttribute("data-GradeCommentary");
+                let GradeAsign = this.getAttribute("data-GradeAsign");
+                let idExamOptional = this.getAttribute("data-idExamOptional");
+                
+                let fechaFormateada = new Date(dateUpExam).toLocaleString("es-ES", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit"
+                });
+
+                changeArchiveViewEdit(ArchiveExamNameOrigin);
+
+                DOMidArchiveExamUp.value = (idArchiveExamUp !== null) ? idArchiveExamUp : 0;
+                DOMidUploadExam.value = (idUploadExam !== null) ? idUploadExam : 0;
+                DOMidExamOptionalForm.value = (idExamOptional !== null) ? idExamOptional : 0;
+                DOMeditTextOpcional.textContent = (textExam !== null) ? textExam : "";
+
+                if (textExam !== null || dateUpExam !== null){ // Hay un envio
+                  EditEntrega.style.display = "block";
+                  trEnvio.style.display = "table-row";
+
+                  stateEnvioText.textContent = "Enviado para calificar";
+                  dateEnvioExam.textContent = `Enviado el ${fechaFormateada}`;
+                  
+                  if (idArchiveExamUp !== null) {
+                    linkToArchive.textContent = ArchiveExamNameOrigin;
+                    linkToArchive.href = "/material/descargar/entrega/" + idArchiveExamUp;
+                    trArchivoSend.style.display = "table-row";
+                  }
+                  if (GradeCommentary !== null) {
+                    tdCommentaryDocente.textContent = GradeCommentary;
+                    comentarioDocente.style.display = "table-row";
+                  }
+                  if (GradeAsign !== null){ // Ya fue calificado
+                    calificationID.textContent = GradeAsign;
+                  }
+                  else{ // No ha sido calificado
+                    calificationID.textContent = "Sin calificar";
+                  }
+
+                }
+                else{ // No hay envio
+                  AddEntrega.style.display = "block";
+                  stateEnvioText.textContent = "Todavia no se realiza ningun envio.";
+                  calificationID.textContent = "Sin calificar";
+                }
+
+                // ------------------------------------------------------------------------ //
 
                 dataExam.style.display = "block";
             }
@@ -377,6 +478,43 @@
           });
         });
       });
+
+
+      document.getElementById("selectArchive").addEventListener("change", changeArchiveViewEdit);
+
+      function changeArchiveViewEdit(nameArchive = 0) {
+
+        let ArchiveEditDivDOM = document.getElementById("ArchiveEditDiv");
+        let selectArchiveDOM = document.getElementById("selectArchive");
+        let SelectArchiveMantenterDOM = document.getElementById("SelectArchiveMantenter");
+
+        if (nameArchive !== 0) {
+          if (nameArchive === null){
+            SelectArchiveMantenterDOM.style.display = "none";
+            selectArchiveDOM.value = "1";
+            ArchiveEditDivDOM.style.display = "block";
+          }
+          else {
+            SelectArchiveMantenterDOM.style.display = "block";
+            if (selectArchiveDOM.value === "1") {
+              ArchiveEditDivDOM.style.display = "block";
+            }
+            else {
+              ArchiveEditDivDOM.style.display = "none";
+            }
+          }
+        }
+        else {
+          if (selectArchiveDOM.value === "1") {
+            ArchiveEditDivDOM.style.display = "block";
+          }
+          else {
+            ArchiveEditDivDOM.style.display = "none";
+          }
+        }
+
+      }
+
       
       function formatDate(dateString) {
         const date = new Date(dateString);
@@ -413,15 +551,7 @@
         document.getElementById("tituloSesion").innerHTML = header;
         document.getElementById("descripcionSesion").innerHTML = descriptionHTML;
         addMaterial(title);
-        document.getElementById("addResourceBTN").innerHTML = `
-          <div class="border p-3 bg-light rounded">
-            <button type="button" class="btn btn-secondary d-flex align-items-center justify-content-left gap-2 col-12" data-bs-toggle="modal" id="buttonResource" data-bs-target="#addResourceModal">
-              <i class="bi bi-plus-circle fs-5"></i>
-              Agregar material
-            </button>
-          </div>`;
         document.getElementById("numberSection").innerText = title;
-        document.getElementById("nameSesion").value = title;
       }
       
       function selectSession(textElement, numberElement) {
@@ -447,52 +577,8 @@
           for (let view of views.information) view.style.display = "block";
         }
       }
-      
-      document.getElementById("typeResource").addEventListener("change", changeTypeResource);
-      function changeTypeResource() {
-        const selectType = document.getElementById("typeResource").value;
-        const viewArchive = document.getElementById("view-archive");
-        const viewLinkWeb = document.getElementById("view-linkWeb");
-        if (selectType === "Selecciona") {
-          viewLinkWeb.hidden = true;
-          viewArchive.hidden = true;
-        } else if (selectType === "Enlace Web") {
-          viewLinkWeb.hidden = false;
-          viewArchive.hidden = true;
-        } else {
-          viewLinkWeb.hidden = true;
-          viewArchive.hidden = false;
-        }
-      }
-      
-      document.getElementById("typeMaterial").addEventListener("change", (e) => {
-        const typeResource = document.getElementById("typeResource");
-        const resourceOptions = document.getElementById("resourceOptions");
-        const archiveUpLabel = document.getElementById("archiveUpLabel");
-        const viewTimeLimit = document.getElementById("view-timeLimit");
-        const viewDateLimit = document.getElementById("view-dateLimit");
-        const btnAddMaterialExam = document.getElementById("btnAddMaterialExam");
-        
-        if (e.target.value === "Recurso") {
-          typeResource.value = "Selecciona";
-          archiveUpLabel.textContent = "Subir Archivo";
-          changeTypeResource();
-          resourceOptions.style.display = "block";
-          viewTimeLimit.hidden = true;
-          viewDateLimit.hidden = true;
-          btnAddMaterialExam.textContent = "Agregar material";
-        } else {
-          typeResource.value = "Archivo";
-          archiveUpLabel.textContent = "Subir Archivo (Opcional)";
-          changeTypeResource();
-          resourceOptions.style.display = "none";
-          viewTimeLimit.hidden = false;
-          viewDateLimit.hidden = false;
-          btnAddMaterialExam.textContent = "Habilitar Evaluación";
-        }
-      });
     </script>
     
-    <footer th:replace="~{professor/master-page :: footer}"></footer>
+    <footer th:replace="~{student/master-page :: footer}"></footer>
   </body>
 </html>

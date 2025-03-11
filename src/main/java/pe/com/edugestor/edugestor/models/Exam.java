@@ -1,14 +1,15 @@
 package pe.com.edugestor.edugestor.models;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -18,30 +19,27 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "student")
-public class Student {
+@Getter
+@Setter
+@Table(name = "exam")
+public class Exam {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idStudent;
+    private Long idExam;
+
+    @Column(name = "limit_date")
+    private LocalDate limitDate;
+
+    @Column(name = "limit_time")
+    private LocalTime limitTime;
 
     @ManyToOne
-    @JoinColumn(name = "id_person")
-    private Person person;
+    @JoinColumn(name = "id_resource")
+    private Resource resourceEX;
 
-    @ManyToMany
-    @JoinTable( 
-        name = "student_professor",
-        joinColumns = @JoinColumn(name = "id_student"),
-        inverseJoinColumns = @JoinColumn(name = "id_professor"))
-    private List<Professor> professor;
-
-    @ManyToMany(mappedBy = "students")
-    private List<Section> sections;
-
-    @OneToMany(mappedBy = "student")
+    @OneToMany(mappedBy = "exam")
     private List<UploadExam> uploadExams;
 }

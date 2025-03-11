@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import pe.com.edugestor.edugestor.models.Person;
 import pe.com.edugestor.edugestor.models.Student;
 import pe.com.edugestor.edugestor.repositories.StudentRepository;
 
@@ -41,5 +42,9 @@ public class StudentService {
 
     public List<Student> listLastSixStudents() {
         return studentRepository.findTop6Students();
+    }
+
+    public Student getStudentByPerson(Person person) {
+        return this.studentRepository.findByPerson(person).orElse(null);
     }
 }
