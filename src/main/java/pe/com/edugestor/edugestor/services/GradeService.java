@@ -31,7 +31,6 @@ public class GradeService {
         if (GradeToEdit == null)
             return null;
         
-        GradeToEdit.setCommentary(entity.getCommentary());
         GradeToEdit.setGradeExam(entity.getGradeExam());
         GradeToEdit.setUploadExam(entity.getUploadExam());
 

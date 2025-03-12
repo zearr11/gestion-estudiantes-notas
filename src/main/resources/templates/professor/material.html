@@ -116,6 +116,7 @@
                                 th:data-nameMaterial="${material.titleMaterial}"
                                 th:data-examDateOptional="${lstExamsDates[resource.idResource]}"
                                 th:data-examTimeOptional="${lstExamsTimes[resource.idResource]}"
+                                th:data-idExamOption="${idExams[resource.typeResource]}"
                                 th:text="${resource.nameResource}">
                         </button>
                       </div>
@@ -136,10 +137,59 @@
             </div>
           </div>
         </div>
-        
+
+        <!-- Modal para Visualizar Entregas de Evaluaciones -->
+        <div class="modal fade" id="entregaEvalModal" tabindex="-1">
+          <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="nameEntregaEvalModal">Entregas de Evaluación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <div class="form-check d-flex justify-content-end form-switch mt-1 mb-3" style="font-size: 17px;">
+                  <input class="form-check-input me-2" type="checkbox" id="checkChangeGrades">
+                  <label class="form-check-label" for="checkChangeGrades">Activar Edición</label>
+                </div>
+                <form id="formEntregaEval" method="post">
+                  <input type="hidden" name="idExam" id="hideIdExam">
+                  <table class="table table-bordered table-hover text-center">
+                    <thead class="table-dark text-center">
+                      <tr>
+                        <th>N°</th>
+                        <th>Estudiante</th>
+                        <th>Descripción</th>
+                        <th>Archivo</th>
+                        <th>Fecha de entrega</th>
+                        <th>Calificación</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tbodyEntregaEval">
+                      <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div class="mt-1 d-flex justify-content-end">
+                    <button disabled type="submit" class="btn btn-primary selectoresGrade">Guardar Cambios</button>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#resourceModalView">Volver</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Modal para visualizar recurso -->
         <div class="modal fade" id="resourceModalView" tabindex="-1" aria-labelledby="nameResourceSesion" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
               <div class="modal-header">
                 <h5 class="modal-title" id="nameResourceSesion">Detalle de Recurso</h5>
@@ -172,6 +222,14 @@
                     <a id="archiveDownload" href="#" class="btn btn-success"></a>
                   </div>
                 </div>
+                <!------------------------------------------>
+                <div id="divViewExamsStudents" class="mt-2">
+                  <span>Entregas:</span>
+                  <div class="text-break mt-2">
+                    <a id="enlaceEntregas" href="#" data-bs-toggle="modal" data-bs-target="#entregaEvalModal" class="btn btn-dark" data-value="">Ver Entregas y Calificaciones</a>
+                  </div>
+                </div>
+                <!------------------------------------------>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -306,12 +364,27 @@
             </div>
           </div>
         </div>
+
+        <!-- Toast confirmar guardado de calificaciones estudiantes -->
+        <div class="toast-container position-fixed bottom-0 end-0 p-2" style="margin-bottom: 80px;">
+          <!-- Toast de Éxito -->
+          <div id="toastSuccess" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+              <div class="d-flex">
+                  <div class="toast-body">
+                      ¡Calificaciones actualizadas correctamente!
+                  </div>
+                  <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+          </div>
+        </div>
+
         
       </div><!-- /last-add -->
     </div><!-- /container -->
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Scripts: se unifican los eventos DOMContentLoaded -->
     <script>
+
       document.addEventListener("DOMContentLoaded", () => {
         // Inicialización de sesión por defecto
         document.getElementById("nameSesion").value = "Introducción";
@@ -335,6 +408,9 @@
             document.getElementById("typeResourceSesion").textContent = this.getAttribute("data-typeResour");
             document.getElementById("dateUploadSesion").textContent = formatDate(this.getAttribute("data-dateUpload"));
 
+            let divViewExamsStudents = document.getElementById("divViewExamsStudents");
+            divViewExamsStudents.style.display = "none";
+
             if (this.getAttribute("data-typeResour") === "Evaluacion") {
                 let dataExam = document.getElementById("dataExam");
                 let timeLimitUp = document.getElementById("timeLimitUp");
@@ -348,6 +424,10 @@
                     dateLimitUp.textContent = `${day}/${month}/${year}`;
                 }
 
+                let enlaceEntregasA = document.getElementById("enlaceEntregas");
+                enlaceEntregasA.dataset.value = this.getAttribute("data-idExamOption");
+
+                divViewExamsStudents.style.display = "block";
                 dataExam.style.display = "block";
             }
             else {
@@ -491,6 +571,135 @@
           btnAddMaterialExam.textContent = "Habilitar Evaluación";
         }
       });
+
+      document.getElementById("checkChangeGrades").addEventListener("change", changeCheckFunct);
+
+      function changeCheckFunct() {
+        let gradesElements = document.querySelectorAll(".selectoresGrade");
+
+        for (let i = 0; i < gradesElements.length; i++) {
+          
+          let element = gradesElements.item(i);
+          
+          if (element.disabled) {
+            element.disabled = false;
+          }
+          else {
+            element.disabled = true;
+          }
+        }
+      }
+
+
+      // ---------------------------------------------------------------------------
+      $("#enlaceEntregas").click(function(e) {
+        e.preventDefault();
+        var idExam = $(this).data("value");
+        document.getElementById("hideIdExam").value = idExam;
+        obtenerDatosExamen(idExam);
+      });
+
+      function obtenerDatosExamen(idExam) {
+        if (!idExam) {
+          console.error("Error: idExam está vacío.");
+          return;
+        }
+    
+        $.ajax({
+            url: "/material/examen/datos",
+            type: "GET",
+            data: { idExam: idExam },
+            success: function(response) {
+                cargarTabla(response);
+            },
+            error: function(error) {
+                console.error("Error al obtener los datos: ", error);
+            }
+        });
+      }
+      
+      function cargarTabla(data) {
+        var tbody = $("#tbodyEntregaEval");
+        tbody.empty();
+
+        $.each(data, function(index, exam) {
+            var fila = $("<tr>");
+
+            var tdIdStudent = $("<input>", {
+                type: "hidden",
+                name: "students[]", 
+                value: exam.idStudent
+            });
+
+            fila.append(tdIdStudent);
+
+            fila.append($("<td>").text(index + 1));
+            fila.append($("<td>").text(exam.namesAndLastname));
+
+            var textExamValue = exam.textExam ? exam.textExam : "-";
+            fila.append($("<td>").text(textExamValue));
+
+            var nameArchiveExamValue = exam.nameArchiveExam ? exam.nameArchiveExam : "-";
+            var nameArchiveExamCell = $("<td>");
+            if (nameArchiveExamValue !== "-") {
+                var enlace = $("<a>")
+                    .attr("href", `/material/descargar/entrega/${exam.idArchiveExam}`)
+                    .addClass("btn btn-success")
+                    .text(nameArchiveExamValue);
+                nameArchiveExamCell.append(enlace);
+            } else {
+                nameArchiveExamCell.text(nameArchiveExamValue);
+            }
+            fila.append(nameArchiveExamCell);
+
+            var formattedTime = exam.timeUp ? new Date(exam.timeUp).toLocaleString() : "-";
+            fila.append($("<td>").text(formattedTime));
+
+            var gradesTD = $("<td>").addClass("text-center");
+            var textGradeCell = $("<select>", {
+                class: "form-select w-auto d-block mx-auto selectoresGrade",
+                name: "grades[]",
+                disabled: true
+            });
+
+            textGradeCell.append($("<option>").val("N/A").text("N/A"));
+
+            if (exam.timeUp) {
+              for (var i = 0; i <= 20; i++) {
+                textGradeCell.append($("<option>").val(i).text(i));
+              }
+            }
+            textGradeCell.val(exam.grade ? exam.grade : "N/A");
+            
+            gradesTD.append(textGradeCell);
+            fila.append(gradesTD);
+
+            tbody.append(fila);
+        });
+      }
+
+      $("#formEntregaEval").submit(function(e) {
+        e.preventDefault();
+    
+        var formData = $(this).serialize();
+    
+        $.ajax({
+            url: "/material/examen/guardar-calificaciones",
+            type: "POST",
+            data: formData,
+            success: function(response) {
+              let toastSuccess = new bootstrap.Toast(document.getElementById("toastSuccess"));
+              toastSuccess.show();
+              document.getElementById("checkChangeGrades").checked = false;
+              changeCheckFunct();
+            },
+            error: function(error) {
+                console.error("Error al guardar calificaciones:", error);
+            }
+        });
+      });
+      // ---------------------------------------------------------------------------
+
     </script>
     
     <footer th:replace="~{professor/master-page :: footer}"></footer>

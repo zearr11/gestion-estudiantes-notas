@@ -25,11 +25,8 @@ public class Grade {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idGrade;
 
-    @Column(name = "commentary")
-    private String commentary;
-
     @Column(name = "grade_exam")
-    private int gradeExam;
+    private String gradeExam;
 
     @ManyToOne
     @JoinColumn(name = "id_upload_exam")

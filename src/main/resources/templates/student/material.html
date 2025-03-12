@@ -95,7 +95,6 @@
                                 th:data-dateUpExam="${dateUploadExams[resource.idResource]}"
                                 th:data-idArchiveExamUp="${IDArchiveExamsOptionals[resource.idResource]}"
                                 th:data-ArchiveExamNameOrigin="${ArchiveExamsNameOriginal[resource.idResource]}"
-                                th:data-GradeCommentary="${NoteCommentarys[resource.idResource]}"
                                 th:data-GradeAsign="${NoteGrades[resource.idResource]}"
                                 th:text="${resource.nameResource}">
                         </button>
@@ -246,10 +245,6 @@
                           <a id="linkToArchive" href="#" class="btn btn-primary"></a>
                         </td>
                       </tr>
-                      <tr id="comentarioDocente">
-                        <th>Comentario del Docente</th>
-                        <td id="commentaryDocente">none</td>
-                      </tr>
                     </table>
                   </div>
                 </div>
@@ -376,8 +371,6 @@
                 let calificationID = document.getElementById("calificationID");
                 let trEnvio = document.getElementById("trEnvio");
                 let dateEnvioExam = document.getElementById("dateEnvioExam");
-                let comentarioDocente = document.getElementById("comentarioDocente");
-                let tdCommentaryDocente = document.getElementById("commentaryDocente");
                 let trArchivoSend = document.getElementById("trArchivoSend");
                 
                 let DOMidArchiveExamUp = document.getElementById("idArchiveExamUp");
@@ -390,7 +383,6 @@
                 AddEntrega.style.display = "none"; // Ocultar botón de agregar entrega
                 EditEntrega.style.display = "none"; // Ocultar botón de editar entrega
                 trEnvio.style.display = "none"; // Ocultar fila de fecha de envio
-                comentarioDocente.style.display = "none"; // Ocultar fila de comentario del docente
                 trArchivoSend.style.display = "none"; // Ocultar fila de archivo enviado
 
                 let idUploadExam = this.getAttribute("data-idUploadExamOptional"); 
@@ -398,7 +390,6 @@
                 let dateUpExam = this.getAttribute("data-dateUpExam"); // Fecha de envio del examen
                 let idArchiveExamUp = this.getAttribute("data-idArchiveExamUp"); // ID del archivo subido
                 let ArchiveExamNameOrigin = this.getAttribute("data-ArchiveExamNameOrigin"); // Nombre del archivo original
-                let GradeCommentary = this.getAttribute("data-GradeCommentary");
                 let GradeAsign = this.getAttribute("data-GradeAsign");
                 let idExamOptional = this.getAttribute("data-idExamOptional");
                 
@@ -428,10 +419,6 @@
                     linkToArchive.textContent = ArchiveExamNameOrigin;
                     linkToArchive.href = "/material/descargar/entrega/" + idArchiveExamUp;
                     trArchivoSend.style.display = "table-row";
-                  }
-                  if (GradeCommentary !== null) {
-                    tdCommentaryDocente.textContent = GradeCommentary;
-                    comentarioDocente.style.display = "table-row";
                   }
                   if (GradeAsign !== null){ // Ya fue calificado
                     calificationID.textContent = GradeAsign;

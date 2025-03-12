@@ -17,10 +17,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.ResponseBody;
 import pe.com.edugestor.edugestor.dto.ExamEdit;
 import pe.com.edugestor.edugestor.dto.ExamUpload;
 import pe.com.edugestor.edugestor.dto.ResourceDTO;
+import pe.com.edugestor.edugestor.dto.StudentExamUp;
 import pe.com.edugestor.edugestor.models.Archive;
 import pe.com.edugestor.edugestor.models.ArchiveExam;
 import pe.com.edugestor.edugestor.models.Course;
@@ -38,6 +39,7 @@ import pe.com.edugestor.edugestor.services.ArchiveExamService;
 import pe.com.edugestor.edugestor.services.ArchiveService;
 import pe.com.edugestor.edugestor.services.CourseService;
 import pe.com.edugestor.edugestor.services.ExamService;
+import pe.com.edugestor.edugestor.services.GradeService;
 import pe.com.edugestor.edugestor.services.LinkService;
 import pe.com.edugestor.edugestor.services.MaterialService;
 import pe.com.edugestor.edugestor.services.PersonService;
@@ -52,8 +54,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-
-
 
 @Controller
 @RequestMapping("/material")
@@ -78,8 +78,8 @@ public class MaterialController {
     private UploadExamService uploadExamService;
     @Autowired
     private ArchiveExamService archiveExamService;
-    // @Autowired
-    // private GradeService gradeService;
+    @Autowired
+    private GradeService gradeService;
     @Autowired
     private StudentService studentService;
     @Autowired
@@ -120,6 +120,7 @@ public class MaterialController {
         Map<Long, String> lstExamsDates = new HashMap<>(); 
         Map<Long, String> lstExamsTimes = new HashMap<>();
         List<Exam> examsOfResource = new ArrayList<>();
+        Map<String, Long> idExams = new HashMap<>();
 
         for (Material material : this.materialService.listAllMaterials()) {
             if (material.getSection().getIdSection().equals(section.getIdSection())) {
@@ -137,6 +138,7 @@ public class MaterialController {
                         lstExamsDates.put(resourceTemp.getIdResource(), examTemp.getLimitDate()+"");
                         lstExamsTimes.put(resourceTemp.getIdResource(), examTemp.getLimitTime()+"");
                         examsOfResource.add(examTemp);
+                        idExams.put("Evaluacion", examTemp.getIdExam());
                     }
                 }
             }
@@ -150,7 +152,6 @@ public class MaterialController {
             Map<Long, String> dateUploadExams = new HashMap<>();
             Map<Long, Long> IDArchiveExamsOptionals = new HashMap<>();
             Map<Long, String> ArchiveExamsNameOriginal = new HashMap<>();
-            Map<Long, String> NoteCommentarys = new HashMap<>();
             Map<Long, String> NoteGrades = new HashMap<>();
             Map<Long, Long> lstIdExamResources = new HashMap<>();
             
@@ -179,8 +180,7 @@ public class MaterialController {
                     }
                     if (uploadExam.getGrades().size()>0) {
                         Grade grade = uploadExam.getGrades().get(0);
-                        NoteCommentarys.put(idResource, grade.getCommentary());
-                        NoteGrades.put(idResource, grade.getGradeExam()+"");
+                        NoteGrades.put(idResource, grade.getGradeExam());
                     }
                     
                 }
@@ -191,7 +191,6 @@ public class MaterialController {
             model.addAttribute("dateUploadExams", dateUploadExams);
             model.addAttribute("IDArchiveExamsOptionals", IDArchiveExamsOptionals);
             model.addAttribute("ArchiveExamsNameOriginal", ArchiveExamsNameOriginal);
-            model.addAttribute("NoteCommentarys", NoteCommentarys);
             model.addAttribute("NoteGrades", NoteGrades);
             model.addAttribute("lstIdExamResources", lstIdExamResources);
             model.addAttribute("examUpload", examUpload);
@@ -213,6 +212,8 @@ public class MaterialController {
 
         model.addAttribute("lstExamsDates", lstExamsDates);
         model.addAttribute("lstExamsTimes", lstExamsTimes);
+
+        model.addAttribute("idExams", idExams);
 
         String ruta = (rol.equals("ROLE_Profesor")) ? "professor/material" : "student/material";
         
@@ -434,6 +435,110 @@ public class MaterialController {
                 .contentType(MediaType.parseMediaType(file.getFileType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getNameArchiveOriginal() + "\"")
                 .body(file.getResourceArchive());
+    }
+
+
+    @GetMapping("/examen/datos")
+    @ResponseBody
+    public List<StudentExamUp> obtenerDatosExamen(@RequestParam("idExam") Long idExam) {
+        return returnLstDataExams(idExam);
+    }
+
+    public List<StudentExamUp> returnLstDataExams(Long idExam) {
+
+        Exam examToList = this.examService.getExamByID(idExam);
+        Resource resourceToList = examToList.getResourceEX();
+        Material materialToList = resourceToList.getMaterial();
+        Section section = materialToList.getSection();
+        List<StudentExamUp> studentExamUps = new ArrayList<>();
+        List<ArchiveExam> archiveExams = this.archiveExamService.listAllArchiveExam();
+        List<Grade> grades = this.gradeService.listAllGrade();
+
+        for (Student student : section.getStudents()) {
+
+            UploadExam uploadExam = examToList.getUploadExams()
+            .stream()
+            .filter(u -> u.getStudent().equals(student))
+            .findFirst()
+            .orElse(null);
+        
+            if (uploadExam != null) { // El estudiante entregó examen
+                Long idStudent = student.getIdStudent();
+                String namesAndLastname = student.getPerson().getName() + " " + student.getPerson().getLastname();
+                LocalDateTime timeUp = uploadExam.getUploadDate();
+                String textExam = (!uploadExam.getTextOptional().equals("")) ? uploadExam.getTextOptional() : "Sin Descripción";
+                
+                // Si usas archiveExams de manera similar, deberías buscar el archivo relacionado al uploadExam
+                ArchiveExam archiveExam = archiveExams.stream()
+                    .filter(ae -> ae.getUploadExamData().equals(uploadExam))
+                    .findFirst()
+                    .orElse(null);
+
+                Grade gradeExam = grades.stream()
+                .filter( ge -> ge.getUploadExam().equals(uploadExam))
+                .findFirst()
+                .orElse(null);
+
+                String grade = gradeExam != null ? gradeExam.getGradeExam() : null;
+
+                Long idArchiveExam = archiveExam != null ? archiveExam.getIdArchiveExam() : null;
+                String nameArchiveExam = archiveExam != null ? archiveExam.getNameArchiveOriginal() : "No adjunto archivo";
+                
+                studentExamUps.add(new StudentExamUp(idStudent, namesAndLastname, 
+                    timeUp, textExam, idArchiveExam, nameArchiveExam, grade));
+            } 
+            else { // El estudiante no entregó examen
+                Long idStudent = student.getIdStudent();
+                String namesAndLastname = student.getPerson().getName() + " " + student.getPerson().getLastname();
+                studentExamUps.add(new StudentExamUp(idStudent, namesAndLastname, 
+                null, null, null, null, null));
+            }
+
+        }
+
+        return studentExamUps;
+        
+    }
+
+
+    @PostMapping("/examen/guardar-calificaciones")
+    public ResponseEntity<String> guardarCalificaciones(
+            @RequestParam("idExam") Long idExam,
+            @RequestParam("students[]") List<Long> students,
+            @RequestParam("grades[]") List<String> grades) {
+        
+        Exam examRe = this.examService.getExamByID(idExam);
+        List<UploadExam> uploadExams = new ArrayList<>();
+        for (UploadExam upExam : this.uploadExamService.listAllUploadExam()) {
+            if (upExam.getExam().equals(examRe)) {
+                uploadExams.add(upExam);
+            }
+        }
+        List<Grade> gradesAll = this.gradeService.listAllGrade();
+        Boolean swt;
+        for (int i = 0; i < students.size(); i++) {
+            Student student = this.studentService.getStudentByID(students.get(i));
+            for (int o = 0; o < uploadExams.size(); o++) {
+                swt = false;
+                if (student.equals(uploadExams.get(o).getStudent())){
+                    for (int x = 0; x < gradesAll.size(); x++) {
+                        if (gradesAll.get(x).getUploadExam().equals(uploadExams.get(o))){
+                            Grade gradeToUpdate = gradesAll.get(x);
+                            gradeToUpdate.setGradeExam(grades.get(i));
+                            this.gradeService.updateGrade(gradeToUpdate);
+                            swt = true;
+                            //System.out.println(gradeToUpdate.getGradeExam() + "-- UPDATE --");
+                        }
+                    }
+                    if (!swt) {
+                        Grade gradeNew = new Grade(null, grades.get(i), uploadExams.get(o));
+                        this.gradeService.createGrade(gradeNew);
+                        //System.out.println(gradeNew.getGradeExam() + "-- CREADO --");
+                    }
+                }
+            }
+        }
+        return ResponseEntity.ok("Calificaciones guardadas correctamente");
     }
 
 }
