@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns="https://www.thymeleaf.org">
+<head th:replace="~{professor/master-page :: head-mp}" ></head>
+<body>
+    <title>Agregar Estudiante Registrado</title>
+    <header th:replace="~{professor/master-page :: header-navbar}"></header>
+
+    <div class="container body">
+        <div class="row mt-4">
+            <div class="mt-1">
+                
+                <h1 class="pb-2 mb-4">Agregar Estudiante Registrado</h1>
+
+
+                <div class="card shadow-lg p-4">
+
+                    <form th:action="@{/estudiantes/agregar-estudiante-registrado}" method="post" id="formPost">
+                        <div class="mb-3">
+                            <label for="codUser" class="form-label">Código de Usuario</label>
+                            <input type="text" class="form-control" id="codUser" name="codUser" 
+                                   placeholder="Ejm: E90892311" maxlength="9" required>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Agregar Estudiante</button>
+                    </form>
+
+                </div>
+                
+
+                <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                    <div id="toastError" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" 
+                         data-bs-delay="3000" th:if="${msgError}">
+                        <div class="d-flex">
+                            <div class="toast-body" th:text="${msgError}"></div>
+                            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <footer th:replace="~{professor/master-page :: footer}"></footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var toastElement = document.getElementById("toastError");
+            if (toastElement) {
+                var toast = new bootstrap.Toast(toastElement);
+                toast.show();
+            }
+        });
+    </script>
+</body>
+</html>

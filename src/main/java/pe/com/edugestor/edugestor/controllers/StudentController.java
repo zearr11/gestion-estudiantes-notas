@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pe.com.edugestor.edugestor.models.Person;
 import pe.com.edugestor.edugestor.models.Professor;
 import pe.com.edugestor.edugestor.models.Student;
@@ -22,9 +23,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
-
-
 
 
 @Controller
@@ -147,6 +145,70 @@ public class StudentController {
             studentToChange.getPerson().getUser().setState("Activo");
         }
         this.studentService.updateStudent(studentToChange);
+        return "redirect:/estudiantes";
+    }
+    
+    @GetMapping("/agregar-registrado")
+    public String goViewAddStudentRegistered(Model model) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Professor professor = this.professorService.getProfessorLog(userDetails.getUsername());
+
+        List<String> codUserStudent = new ArrayList<>();
+
+        for (Student student : professor.getStudent()) {
+            codUserStudent.add(student.getPerson().getUser().getCodUser());
+        }
+
+        model.addAttribute("codUserStudents", codUserStudent);
+
+        return "professor/add-student-reg";
+    }
+    
+    @PostMapping("/agregar-estudiante-registrado")
+    public String addStudentRegistered(@RequestParam String codUser, RedirectAttributes redirect) {
+        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        Professor professor = this.professorService.getProfessorLog(userDetails.getUsername());
+        List<Student> studentsOfProfessor = professor.getStudent();
+        Boolean studentExist = false;
+
+        User userStudent = this.userService.getUserByCod(codUser);
+        
+        if (userStudent != null) { // Es un estudiante valido
+            
+            Person personStudent = this.personService.getPersonByUser(userStudent);
+            Student studentData = this.studentService.getStudentByPerson(personStudent);
+
+            for (Student studentProf : studentsOfProfessor) { // Verifica que el estudiante no tenga relacion con profesor
+            
+                if (studentProf.getIdStudent().equals(studentData.getIdStudent())) {
+                    studentExist = true;
+                    break;
+                }
+
+            }
+
+            if (!studentExist) { // Estudiante no tiene relacion con profesor
+                List<Professor> professorsToStudent = studentData.getProfessor();
+                professorsToStudent.add(professor);
+                studentData.setProfessor(professorsToStudent);
+                
+                this.studentService.updateStudent(studentData);
+            }
+            else { // Estudiante si tiene relacion con profesor
+                redirect.addFlashAttribute("msgError", "El usuario ya se encuentra en el listado.");
+                return "redirect:/estudiantes/agregar-registrado";
+            }
+
+        }
+        else {
+            redirect.addFlashAttribute("msgError", "El estudiante ingresado no se encuentra registrado");
+            return "redirect:/estudiantes/agregar-registrado";
+        }
+
         return "redirect:/estudiantes";
     }
     
