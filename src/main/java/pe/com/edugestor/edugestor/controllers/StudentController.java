@@ -136,7 +136,6 @@ public class StudentController {
     
     @PostMapping("/cambiar-estado")
     public String changeState(@RequestParam("idStudentChange") Long idStudent) {
-        System.out.println(idStudent);
         Student studentToChange = this.studentService.getStudentByID(idStudent);
         if (studentToChange.getPerson().getUser().getState().equals("Activo")){
             studentToChange.getPerson().getUser().setState("Inactivo");

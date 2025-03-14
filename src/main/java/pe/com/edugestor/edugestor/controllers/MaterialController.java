@@ -527,13 +527,11 @@ public class MaterialController {
                             gradeToUpdate.setGradeExam(grades.get(i));
                             this.gradeService.updateGrade(gradeToUpdate);
                             swt = true;
-                            //System.out.println(gradeToUpdate.getGradeExam() + "-- UPDATE --");
                         }
                     }
                     if (!swt) {
                         Grade gradeNew = new Grade(null, grades.get(i), uploadExams.get(o));
                         this.gradeService.createGrade(gradeNew);
-                        //System.out.println(gradeNew.getGradeExam() + "-- CREADO --");
                     }
                 }
             }

@@ -62,8 +62,6 @@ public class SectionController {
 
         model.addAttribute("course", courseSelected);
         model.addAttribute("sections", courseSelected.getSections());
-
-        System.out.println(courseSelected.getNameCourse());
         
         return "professor/section-course"; 
     }
